@@ -22,7 +22,7 @@ var allTitle = $All(".title");
 for (var i = 0; i< allContent.length; i++){
     if (i == current){
         console.log(allContent[i]);
-        tab.addClass(allContent[i], "cur")
+        tab.addClass(allContent[i], "cur");
         console.log(allContent[i].className)
     }
 
