@@ -1,0 +1,1268 @@
+<!DOCTYPE HTML>
+<!--<html manifest="./index.appcache">-->
+<html>
+<head>
+  <meta charset="utf-8"></meta>
+  <title>答尔文</title>
+  <meta name="format-detection" content="telephone=no"></meta>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no"></meta>
+  <script  src="iscroll-probe.js"></script>
+  <script >
+    var myScroll;
+    function loaded () {
+      myScroll = new IScroll('#wrapper',{
+        scrollbars: true,
+        mouseWheel: true,
+        preventDefault: false,
+        interactiveScrollbars: true,
+        shrinkScrollbars: 'scale',
+        fadeScrollbars: true,
+        probeType: 3
+      });
+      myScroll.on("scroll", function(){
+        var scrollTop = Math.abs(this.y);
+        if (scrollTop > 260){
+          $("#select_bar_top").style.display = "block";
+          $("#header_bar").style.display = "none";
+        } else {
+          $("#select_bar_top").style.display = "none";
+          $("#header_bar").style.display = "block";
+
+        }
+      });
+
+      myScroll.on('scrollEnd', function(){
+        console.log(Math.abs(this.y))
+      });
+
+    }
+
+    document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+
+  </script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    html {
+      width: 100%;
+      height: 100%
+    }
+    body{
+      width: 100%;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      background-color: #fff;
+      height: 100%;
+      position: relative;
+    }
+    #wrapper{
+      height: 100%;
+      position: relative;
+      top: 0;
+      left: 0;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    ul, li, ol {
+      list-style-type: none;
+    }
+
+    a {
+      text-decoration: none;
+      color: #242624;
+    }
+    img {
+      border: 0 none;
+    }
+    .cf:after{
+      content: '';
+      display: table;
+      clear: both;
+    }
+
+    .content_icon {
+      width: 8px;
+      height: 19px;
+      background: url("../../creditScore/img/v_kuai@3x.png")
+      no-repeat center center;
+      margin: 0 25px 0 0;
+    }
+
+    .ruleLevelSame {
+      color: #242624;
+      font-size: 19px;
+      margin-right: 25px;
+    }
+
+    .creditStatusBig {
+      width: 120px;
+      height: 87px;
+      margin: 0 auto;
+      display: block;
+
+    }
+
+    .ruleLevel0 {
+      color: #1AAD19;
+    }
+
+    .ruleLevel1 {
+      color: #1AAD19;
+    }
+
+    .ruleLevel2, .ruleLevel3, .ruleLevel4 {
+      color: black;
+    }
+
+    .ruleLevel5 {
+      color: #ff0018;
+    }
+
+    #rule_container div:nth-child(2) {
+      display: none;
+    }
+
+    .score_img {
+      width: 25px;
+      height: 25px;
+      margin: 0 0 7px 0;
+      z-index: 200;
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+
+    .score_line {
+      width: 100%;
+      left: 0;
+    }
+
+    .credit_header {
+      /*background: linear-gradient(to bottom right, #a3a3cd 0, #44446b 50%, #8b8ba9 100%);*/
+      background-size: cover;
+    }
+
+    .hide {
+      display: none;
+    }
+
+    .show {
+      display: block;
+    }
+
+    #scoreUl{
+      display: table;
+      width: 100%;
+    }
+    #scoreUl>li{
+      display: table-cell;
+      text-align: center;
+    }
+    #scoreUl>li div:first-child{
+      display: inline-block;
+    }
+    .zqUl{
+      position: relative;
+    }
+    .zqUl>li:first-child{
+      display: inline-block;
+    }
+    .zqUl>li:first-child div{
+      display: inline-block;
+    }
+    .zqUl>li:last-child{
+      display: block;
+      position: absolute;
+      right:0;
+      top:0;
+    }
+    /*日榜和总榜*/
+    .inline_block_con{
+      font-size: 0;
+      letter-spacing: -4px;
+    }
+    .inline_block_child{
+      font-size: 14px;
+      letter-spacing: 0;
+    }
+    /*.transform_center{*/
+      /*transform: translate(-50%, 0%);*/
+    /*}*/
+    .select_bar{
+      text-align: center;
+      position: relative;
+      width: 100%;
+      z-index: 20;
+    }
+    .select_bar .header_bar{
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-color: #fff;
+      border-bottom: 1px solid #ebebeb;
+    }
+    .select_bar .header_list{
+      display: inline-block;
+      width: 50%;
+      height: 54px;
+      line-height: 55px;
+      color: #ABABAB;
+    }
+    .select_bar .line{
+      position: absolute;
+      bottom: 0;
+      width: 25px;
+      height: 3px;
+      background-color: #242624;
+      left: 25%;
+      margin-left: -12px;
+    }
+    .select_bar .cur{
+      color: #242624;
+    }
+    .resize{
+      position: absolute;
+      top: 315px;
+      bottom: 0;
+      width: 100%;
+    }
+    .rank_content{
+      position: relative;
+      width: 100%;
+    }
+    .rank_content #swipe{
+      width: 200%;
+      position:relative;
+      left: 0;
+      top: 0;
+    }
+    .first_content, .last_content{
+      padding: 15px 0;
+      border: 1px solid #ebebeb;
+    }
+    .first_content .first_bg, .last_content .first_bg{
+      width: 92%;
+      background-color: #f3f3f4;
+      margin: 0 auto;
+      border-radius: 5px;
+      padding: 0 0.5%;
+    }
+    .first_bg .font_rank{
+      width: 33%;
+      text-align: center;
+      position: relative;
+      float: left;
+    }
+    .font_rank > *{
+      position: relative;
+      z-index: 2;
+    }
+    .font_rank .font_img{
+      /*max-width: 114px;*/
+      display: block;
+      width: 74%;
+      margin: 0 auto;
+      border-radius: 50%;
+      background-color: #ccc;
+    }
+    .good_img{
+      padding:10px 18px 18px 18px;
+    }
+    .font_rank .font_img_bg{
+      /*max-width: 146px;*/
+      width: 100%;
+      display: block;
+      margin-top: -76%;
+    }
+    .font_rank_one .font_img{
+      /*max-width: 144px;*/
+    }
+    .font_rank_one .font_img_bg{
+      /*max-width: 182px;*/
+    }
+    .good_img_one{
+      padding: 10px 10px 0 10px;
+    }
+    .font_two_name{
+      margin: 23% auto 0;
+      font-size: 14px;
+    }
+    .font_two_name, .font_three_name{
+      margin-top: 12%;
+    }
+    .font_one_name{
+      margin-top: 12%;
+    }
+    .font_two_score, .font_three_score, .font_one_score{
+      margin-bottom: 15px;
+    }
+    .swipe_style{
+      width: 50%;
+      float: left;
+    }
+
+    /*详情样式*/
+    .day_detail{
+      height: 70px;
+      background-color: white;
+    }
+    .ran_line{
+      border-bottom: 1px solid #f1f1f1;
+      margin-left: 52px
+    }
+    .day_detail:after{
+      content: '';
+      display: inline-block;
+      width: 0;
+      height: 100%;
+      vertical-align: middle;
+    }
+    .day_detail>div{
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .day_rank_num{
+      margin-left: 10px;
+      font-size: 17px;
+      width: 24px;
+      text-align: right;
+      line-height: 24px;
+      color: #242624;
+      margin-right: 21px;
+    }
+    .day_other_avatar{
+      width: 45px;
+      height: 45px;
+      background-color: #ccc;
+      position: absolute;
+      top: 0;
+      left: 0;
+      border-radius: 50%;
+    }
+    .day_rank_name{
+      font-size: 15px;
+      color: #242624;
+    }
+    .day_other_avatar_container{
+      width: 45px;
+      height: 45px;
+      position: relative;
+    }
+    .day_rank_gender{
+      width: 12px;
+      margin-left: 5px;
+    }
+    .rank_score{
+      color: #1AAD19;
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .one_bg{
+      position: absolute;
+      top: -10px;
+      left: 0;
+      width: 100%;
+      z-index: 1;
+    }
+    .square{
+      width: 100%;
+      height: 100px;
+      position: relative;
+      background: #f3f3f4;
+      border-radius: 5px;
+    }
+    .square:before{
+      content: "";
+      position: absolute;
+      left: -10px;
+      top:10px;
+      width: 0;
+      height: 0;
+      border-right: 10px solid #ebebeb;
+      border-bottom: 100px solid transparent;
+
+    }
+    .square:after{
+      content: "";
+      position: absolute;
+      right: -10px;
+      top:10px;
+      width: 0;
+      height: 0;
+      border-left: 10px solid #ebebeb;
+      border-bottom: 100px solid transparent;
+    }
+    .day_score, .total_score{
+      color: #1AAD19;
+      font-size: 12px;
+    }
+    .day_name, .total_name{
+      font-size: 15px;
+      color: #242624;
+    }
+    .swipe_right{
+
+    }
+    .swipe_left{
+
+    }
+    #select_bar_top{
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    #scroller{
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+  </style>
+</head>
+<body onload="loaded()">
+<div class="select_bar" id="select_bar_top">
+  <header class="header_bar inline_block_con" id="header_bar1">
+    <div class="header_list cur inline_block_child">日榜</div>
+    <div class="header_list inline_block_child">总榜</div>
+    <div class="line" id="line1"></div>
+  </header>
+  <div style="width: 100%;height: 54px;">
+
+  </div>
+</div>
+<div id="wrapper" class="wrapper">
+  <div id="scroller">
+    <span id="creditScore" style="display: none;" th:text="${creditScore}">2800</span>
+    <span id="beat" style="display: none" th:text="${beatProportion+'%'}">100%</span>
+    <span id="userId" style="display: none" th:text="${userId}">138000</span>
+    <span id="rank_json" style="display: none" th:text="${prominent}">138000</span>
+    <div style="height: 260px;position: relative; background: url('../../creditScore/img/zv_bj@3x.jpg') no-repeat center center;background-size: cover;">
+      <img onclick="detailHtml()" src="../../creditScore/img/x_shuoming@3x.png" alt="" style="width: 20px;height: 20px;position: absolute;top:20px;right:15px;">
+      <div class="credit_header">
+        <p style="color: #CFCBD5; font-size: 19px; padding: 20px 0 7px; margin: 0; text-align: center;" id="myCreditScore">我的信用0</p>
+        <p style="color: #CFCBD5; font-size: 12px; padding: 0px 0 10px; margin: 0; text-align: center;" id="win">击败</p>
+        <img class="creditStatusBig" id="creditStatusBig" src="../../creditScore/img/zqbg.png" alt="">
+        <div style="padding: 23px 0px 20px;">
+          <div style="position: relative;">
+            <ul class="flex-start-container" style="position: relative; z-index: 2000;" id="scoreUl"></ul>
+            <div style="position: absolute; top: 0; left: 8.3%; width: 83.3%;">
+              <div style="border: 1px solid #c8c8c8;; position: absolute; top: 11.5px; z-index: 1000;" class="score_line"></div>
+              <div style="border: 1px solid #fee893; position: absolute; top: 11.5px; z-index: 1000;" id="scoreLine" class="score_line"></div>
+              <div style="width: 7px; height: 7px; border-radius: 50%; background-color: #fee893; position: absolute; top: 9px; z-index: 1500; margin-left: -3.5px;" id="scoreArc"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="select_bar" id="select_bar">
+      <header class="header_bar inline_block_con" id="header_bar">
+        <div class="header_list cur inline_block_child">日榜</div>
+        <div class="header_list inline_block_child">总榜</div>
+        <div class="line" id="line"></div>
+      </header>
+      <div style="width: 100%;height: 54px;">
+
+      </div>
+    </div>
+
+    <div class="rank_content">
+      <div  id="swipe" class="cf">
+        <div class="swipe_left swipe_style">
+          <div class="first_content">
+            <div class="first_bg cf">
+              <div class="font_rank first_day" data-id="2">
+                <div class="good_img">
+                  <img class="font_img day_img" src="../../creditScore/img/zqbg.png" alt="">
+                  <img class="font_img_bg transform_center" src="../../creditScore/img/x_two@3x.png" alt="" onerror="imgError()">
+                </div>
+                <div class="font_two_name day_name"></div>
+                <div class="font_two_score day_score"></div>
+              </div>
+              <div class="font_rank  first_day font_rank_one" data-id="1">
+                <div class="good_img_one">
+                  <img class="font_img day_img" src="../../creditScore/img/zqbg.png" alt="">
+                  <img class="font_img_bg transform_center" src="../../creditScore/img/x_one@3x.png" alt=""  onerror="imgError()">
+                </div>
+                <div class="font_one_name day_name"></div>
+                <div class="font_one_score day_score"></div>
+
+                <div class="one_bg" id="one_bg">
+                  <div class="square"></div>
+                </div>
+              </div>
+              <div class="font_rank first_day" data-id="3">
+                <div class="good_img">
+                  <img src="../../creditScore/img/zqbg.png" alt="" class="font_img day_img">
+                  <img class="font_img_bg transform_center" src="../../creditScore/img/x_three@3x.png" alt=""  onerror="imgError()">
+                </div>
+                <div class="font_three_name day_name"></div>
+                <div class="font_three_score day_score"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="table_row" style="height: 100%;">
+            <div class="scroll">
+              <div id="day_rank">
+
+              </div>
+            </div>
+          </div>
+
+          <div style="padding-top: 77px;font-size: 12px;color: #242624;padding-bottom: 10px;text-align: center;">—— 我们是有底线的 ——</div>
+        </div>
+        <div class="swipe_right swipe_style">
+          <div class="last_content">
+            <div class="first_bg cf">
+              <div class="font_rank first_total"  data-id="2">
+                <div class="good_img">
+                  <img src="../../creditScore/img/zqbg.png" alt="" class="font_img total_img">
+                  <img class="font_img_bg transform_center" src="../../creditScore/img/x_two@3x.png" alt="" onerror="imgError()">
+                </div>
+                <div class="font_two_name total_name"></div>
+                <div class="font_two_score total_score"></div>
+              </div>
+              <div class="font_rank first_total font_rank_one font_rank_one_total"  data-id="1">
+                <div class="good_img_one">
+                  <img src="../../creditScore/img/zqbg.png" alt="" class="font_img total_img">
+                  <img class="font_img_bg transform_center" src="../../creditScore/img/x_one@3x.png" alt="" onerror="imgError()">
+                </div>
+                <div class="font_one_name total_name"></div>
+                <div class="font_one_score total_score"></div>
+
+                <div class="one_bg" id="one_bg_total">
+                  <div class="square"></div>
+                </div>
+              </div>
+              <div class="font_rank first_total"  data-id="3">
+                <div class="good_img">
+                  <img src="../../creditScore/img/zqbg.png" alt="" class="font_img total_img">
+                  <img class="font_img_bg transform_center" src="../../creditScore/img/x_three@3x.png" alt="" onerror="imgError()">
+                </div>
+                <div class="font_three_name total_name"></div>
+                <div class="font_three_score total_score"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="table_row" style="height: 100%;">
+            <div class="scroll">
+              <div id="all_rank">
+
+              </div>
+            </div>
+          </div>
+
+          <div style="padding-top: 77px; padding-bottom: 10px;font-size: 12px;color: #242624;text-align: center;">—— 我们是有底线的 ——</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+
+<script th:inline="javascript">
+  /*<![CDATA[*/
+
+  function rank(id){
+    window.open("http://www.aihuawen.com?id="+ id +"", "_self");
+  }
+
+  function detailHtml(){
+    window.open("http://www.aihuawen.com/?scoredescribe=100", "_self");
+  }
+
+  function imgError(e){
+    var ele = window.event || e;
+    var that = ele.srcElement || ele.target;
+    that.style.display ="none";
+  }
+
+  //window.onload =function(){
+    var $ = function(type){
+      return document.querySelector(type);
+    };
+
+    var rankJson = document.getElementById("rank_json");
+//    var resJson = rankJson.innerHTML ? JSON.parse(rankJson.innerHTML) : {dayProminent: [], totalProminent: []};
+    var resJson = {
+      "dayProminent":[
+        {
+          "score":10,
+          "gender":1,
+          "displayName":"罗宗庆",
+          "avatar":"/member/20171110/20171110111614337.jpg",
+          "id":1388013
+        },
+        {
+          "score":10,
+          "gender":0,
+          "displayName":"123啦啦啦我",
+          "avatar":"/member/20171116/201711161742349.jpg",
+          "id":1389614
+        },
+        {
+          "score":5,
+          "gender":0,
+          "displayName":"空军建",
+          "avatar":"/member/20171116/20171116150949462.jpg",
+          "id":1388464
+        },
+        {
+          "score":5,
+          "displayName":"测试",
+          "avatar":"/static/avatar/2.png",
+          "id":1389839
+        },
+        {
+          "score":5,
+          "displayName":"测试1",
+          "avatar":"/static/avatar/4.png",
+          "id":1389841
+        },
+        {
+          "score":1,
+          "gender":0,
+          "displayName":"22225555",
+          "avatar":"/member/20171102/20171102155226404.jpg",
+          "id":1389616
+        },
+        {
+          "score":1,
+          "gender":0,
+          "displayName":"7777",
+          "avatar":"/member/20171117/20171117134606394.jpg",
+          "id":1389820
+        },
+        {
+          "score":5,
+          "displayName":"测试1",
+          "avatar":"/static/avatar/4.png",
+          "id":1389841
+        },
+        {
+          "score":1,
+          "gender":0,
+          "displayName":"22225555",
+          "avatar":"/member/20171102/20171102155226404.jpg",
+          "id":1389616
+        },
+        {
+          "score":1,
+          "gender":0,
+          "displayName":"7777",
+          "avatar":"/member/20171117/20171117134606394.jpg",
+          "id":1389820
+        },
+        {
+          "score":5,
+          "displayName":"测试1",
+          "avatar":"/static/avatar/4.png",
+          "id":1389841
+        },
+        {
+          "score":1,
+          "gender":0,
+          "displayName":"22225555",
+          "avatar":"/member/20171102/20171102155226404.jpg",
+          "id":1389616
+        },
+        {
+          "score":1,
+          "gender":0,
+          "displayName":"7777",
+          "avatar":"/member/20171117/20171117134606394.jpg",
+          "id":1389820
+        }
+      ],
+      "gender":1,
+      "totalTop":1,
+      "displayname":"罗宗庆",
+      "dayTop":1,
+      "dayScore":10,
+      "avatar":"/member/20171110/20171110111614337.jpg",
+      "totalProminent":[
+        {
+          "afterScore":10000,
+          "gender":1,
+          "displayName":"zzq",
+          "avatar":"/member/20171110/20171110111614337.jpg",
+          "id":1388013
+        },
+        {
+          "afterScore":1000,
+          "gender":0,
+          "displayName":"hahaha",
+          "avatar":"/member/20171116/201711161742349.jpg",
+          "id":1389614
+        },
+        {
+          "afterScore":5,
+          "gender":0,
+          "displayName":"空军建",
+          "avatar":"/member/20171116/20171116150949462.jpg",
+          "id":1388464
+        },
+        {
+          "afterScore":5,
+          "displayName":"测试",
+          "avatar":"/static/avatar/2.png",
+          "id":1389839
+        },
+        {
+          "afterScore":5,
+          "displayName":"测试1",
+          "avatar":"/static/avatar/4.png",
+          "id":1389841
+        },
+        {
+          "afterScore":1,
+          "gender":0,
+          "displayName":"22225555",
+          "avatar":"/member/20171102/20171102155226404.jpg",
+          "id":1389616
+        },
+        {
+          "afterScore":1,
+          "gender":0,
+          "displayName":"7777",
+          "avatar":"/member/20171117/20171117134606394.jpg",
+          "id":1389820
+        },
+        {
+          "afterScore":5,
+          "displayName":"测试1",
+          "avatar":"/static/avatar/4.png",
+          "id":1389841
+        },
+        {
+          "afterScore":1,
+          "gender":0,
+          "displayName":"22225555",
+          "avatar":"/member/20171102/20171102155226404.jpg",
+          "id":1389616
+        },
+        {
+          "afterScore":1,
+          "gender":0,
+          "displayName":"7777",
+          "avatar":"/member/20171117/20171117134606394.jpg",
+          "id":1389820
+        },
+        {
+          "afterScore":5,
+          "displayName":"测试1",
+          "avatar":"/static/avatar/4.png",
+          "id":1389841
+        },
+        {
+          "afterScore":1,
+          "gender":0,
+          "displayName":"22225555",
+          "avatar":"/member/20171102/20171102155226404.jpg",
+          "id":1389616
+        },
+        {
+          "afterScore":1,
+          "gender":0,
+          "displayName":"7777",
+          "avatar":"/member/20171117/20171117134606394.jpg",
+          "id":1389820
+        }
+      ],
+      "totalScore":4449
+    };
+
+
+    var creditScoreVal = $("#creditScore").innerHTML;
+
+    var u = navigator.userAgent;
+//    if (!(!!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/))){
+//      $("#rankBan").style.display = "none";
+//    }
+
+    var imgArr = new Array();
+
+    //排行榜数据/////////////////////////////////////////////////////////////////////////////////////
+    var $all = function(type){
+      return document.querySelectorAll(type);
+    };
+
+    //页面动画事件处理
+    function getStyle(obj, attr) {
+      if (obj.currentStyle) {
+        return obj.currentStyle[attr];
+      } else {
+        return getComputedStyle(obj, null)[attr];
+      }
+    }
+
+    var fontRank = $all(".font_rank");
+
+    $("#one_bg_total").style.height = getStyle($(".font_rank_one_total"), "height");
+
+
+    for(var b =0; b < fontRank.length; b++){
+      fontRank[b].onclick = function(){
+        window.open("http://www.aihuawen.com?id="+ this.getAttribute("data-id") +"", "_self");
+      }
+    }
+
+    //过渡动画
+    function transition(ele, type , time, attr){
+      "mozTransition,webkitTransition,oTransition,transition,msTransition".split(",").forEach(function(content, index){
+        ele.style[content] = time + " " + type;
+        for (var i in attr){
+          ele.style[i] = attr[i];
+        }
+      })
+    }
+
+    //add class 和 remove class
+    var tab = {
+      addClass: function(obj, css){
+        obj.className = obj.className + " " + css;
+      },
+      removeClass: function(obj, css){
+        if (obj.className.indexOf(css) != -1){
+          var arr = obj.className.split(" " + css);
+          var str = "";
+          for (var i = 0; i< arr.length; i++){
+            str += arr[i];
+          }
+          obj.className = str;
+        }
+      }
+    };
+
+    //日榜 和 总榜
+    var allRank = {
+      day: function(){
+        tab.addClass($all(".header_list")[0], "cur");
+        tab.addClass($all(".header_list")[2], "cur");
+        tab.removeClass($all(".header_list")[1], "cur");
+        tab.removeClass($all(".header_list")[3], "cur");
+        transition(line, "linear", "200ms", {left: "25%"});
+        transition(line1, "linear", "200ms", {left: "25%"});
+        transition(swipe, "linear", "200ms", {left: "0%"});
+      },
+      total: function(){
+        tab.addClass($all(".header_list")[1], "cur");
+        tab.addClass($all(".header_list")[3], "cur");
+        tab.removeClass($all(".header_list")[0], "cur");
+        tab.removeClass($all(".header_list")[2], "cur");
+        transition(swipe, "linear", "200ms", {left: "-100%"});
+        transition(line, "linear", "200ms", {left: "75%"});
+        transition(line1, "linear", "200ms", {left: "75%"});
+      }
+    };
+
+
+    var line = document.getElementById("line");
+    var line1 = document.getElementById("line1");
+    var swipe = document.getElementById("swipe");
+    var curLoc = {x: 0, y: 0, time: 0};
+    var resLoc = {x: 0, y: 0, time: 0};
+    var curLeft = 0;
+    var dir = 0;
+    var ableSwipe = true;//是否允许上下滑动
+
+    for (var i = 0; i< $all(".header_list").length; i++){
+      dir = 0;
+      $all(".header_list")[i].index = i;
+      $all(".header_list")[i].onclick = function(){
+        var index = this.index;
+        console.log(index);
+        if (index == 1 || index == 3){
+          allRank.total();
+        } else if (index == 0 || index == 2){
+          allRank.day();
+        }
+      };
+    }
+
+
+
+    swipe.addEventListener('touchstart',start, false);
+
+    function start(e){
+      dir = 0;
+      e.preventDefault();
+      curLoc.x = e.touches[0].pageX;
+      curLoc.y = e.touches[0].pageY;
+      curLoc.time = new Date().getTime();
+      curLeft = getStyle(swipe, "left");
+
+      swipe.addEventListener('touchmove',move,false);
+      swipe.addEventListener('touchend',end,false);
+    }
+
+    function move(e){
+      resLoc.x = e.touches[0].pageX;
+      resLoc.y = e.touches[0].pageY;
+
+      if (Math.abs(resLoc.x - curLoc.x) > Math.abs(resLoc.y - curLoc.y)){
+        ableSwipe = false;
+      }
+      if (!ableSwipe){
+        e.preventDefault();
+      } else {
+
+      }
+//      if (!ableSwipe && Math.abs(resLoc.y - curLoc.y) >=0 && Math.abs(resLoc.y - curLoc.y) <=10 && Math.abs(resLoc.x - curLoc.x) >= 10){
+//        ableSwipe = true;
+//      }
+      if (!ableSwipe){
+        dir = resLoc.x - curLoc.x;
+        if (parseFloat(curLeft) + resLoc.x - curLoc.x < 0 && parseFloat(curLeft) + resLoc.x - curLoc.x > -document.body.clientWidth){
+          transition(swipe, "linear", "0ms" ,{left: parseFloat(curLeft) + resLoc.x - curLoc.x + "px"});
+        }
+        //swipe.style.left = parseFloat(curLeft) + resLoc.x - curLoc.x + "px";
+      }
+    }
+
+    function end(e){
+      console.log(parseFloat(curLeft));
+      console.log(parseFloat(curLeft) + resLoc.x - curLoc.x);
+      console.log("end");
+      resLoc.time = new Date().getTime();
+
+      if (resLoc.time - curLoc.time >= 0 && resLoc.time - curLoc.time < 500 && dir != 0){
+        if (dir < 0){
+          allRank.total();
+        } else {
+          allRank.day();
+        }
+      } else {
+        if (Math.abs(dir) > document.body.clientWidth/2){
+          if (dir < 0){
+            allRank.total();
+          } else {
+            allRank.day();
+          }
+        } else {
+          transition(swipe, "linear", "100ms", {left: curLeft});
+        }
+      }
+      ableSwipe = true;
+
+      swipe.removeEventListener("touchmove", move, false);
+      swipe.removeEventListener("touchend", end, false);
+    }
+
+
+    //////////////////////////
+    var genderImg = ["../../creditScore/img/v_boy.png", "../../creditScore/img/v_girl.png"];
+
+    var dayRankDetailTotal = "", rankIndex = "", rankGender = "", totalRankDetailTotal = "", rankScore, dayRankDetail = "";
+
+    //排行列表数据处理
+    function rankList(json, index){
+      //性别图片
+      if (json[index].gender == 0){
+        rankGender = genderImg[0];
+      } else {
+        rankGender = genderImg[1];
+      }
+
+      if (json[index].afterScore && json[index].afterScore != ""){
+          rankScore = "总信用: " + json[index].afterScore;
+      } else {
+          rankScore = "+信用: " + json[index].score;
+      }
+
+      dayRankDetail = '<div class="day_detail" onclick="rank('+ json[index].id +')"><div class="day_rank_num">'+ (index + 1) +'</div><div class="day_other_avatar_container">' +
+              '<img src="'+ json[index].avatar +'" alt="" class="day_other_avatar"></div><div style="margin-left: 15px;"><span class="day_rank_name">'+json[index].displayName+'</span>' +
+              '<img src="'+ rankGender +'" alt="'+ json[index].gender +'" class="day_rank_gender" onerror="imgError()"><div class="rank_score">'+rankScore+'</div></div></div><div class="ran_line"></div></li>';
+
+      return dayRankDetail;
+    }
+    //日榜
+    var dayProminent = resJson.dayProminent;
+    var totalProminent = resJson.totalProminent;
+
+
+    for (var n = 0; n < dayProminent.length; n ++){
+      switch(n){
+        case 0:
+
+          $all(".first_day")[1].setAttribute("data-id", dayProminent[n].id);
+          $all(".day_img")[1].style.background = "url("+dayProminent[n].avatar+ ") no-repeat center center";
+          $all(".day_img")[1].style.backgroundSize = "cover";
+          $all(".day_name")[1].innerHTML = dayProminent[n].displayName;
+          $all(".day_score")[1].innerHTML = "+信用: " + dayProminent[n].score;
+          break;
+        case 1:
+          $all(".first_day")[0].setAttribute("data-id", dayProminent[n].id);
+          $all(".day_img")[0].style.background = "url("+dayProminent[n].avatar+ ") no-repeat center center";
+          $all(".day_img")[0].style.backgroundSize = "cover";
+          $all(".day_name")[0].innerHTML = dayProminent[n].displayName;
+          $all(".day_score")[0].innerHTML = "+信用: " +  dayProminent[n].score;
+          break;
+        case 2:
+          $all(".first_day")[2].setAttribute("data-id", dayProminent[n].id);
+          $all(".day_img")[2].style.background = "url("+dayProminent[n].avatar+ ") no-repeat center center";
+          $all(".day_img")[2].style.backgroundSize = "cover";
+          $all(".day_name")[2].innerHTML = dayProminent[n].displayName;
+          $all(".day_score")[2].innerHTML = "+信用: " +  dayProminent[n].score;
+          break;
+        default:
+          dayRankDetailTotal += rankList(dayProminent, n);
+          break;
+      }
+    }
+
+    for (var m = 0; m < totalProminent.length; m ++){
+      switch(m){
+        case 0:
+          $all(".first_total")[1].setAttribute("data-id", totalProminent[m].id);
+          $all(".total_img")[1].style.background = "url("+totalProminent[m].avatar+ ") no-repeat center center";
+          $all(".total_img")[1].style.backgroundSize = "cover";
+          $all(".total_name")[1].innerHTML = totalProminent[m].displayName;
+          $all(".total_score")[1].innerHTML = "总信用: " + totalProminent[m].afterScore;
+          break;
+        case 1:
+          $all(".first_total")[0].setAttribute("data-id", totalProminent[m].id);
+          $all(".total_img")[0].style.background = "url("+totalProminent[m].avatar+ ") no-repeat center center";
+          $all(".total_img")[0].style.backgroundSize = "cover";
+          $all(".total_name")[0].innerHTML = totalProminent[m].displayName;
+          $all(".total_score")[0].innerHTML ="总信用: " +  totalProminent[m].afterScore;
+          break;
+        case 2:
+          $all(".first_total")[2].setAttribute("data-id", totalProminent[m].id);
+          $all(".total_img")[2].style.background = "url("+totalProminent[m].avatar+ ") no-repeat center center";
+          $all(".total_img")[2].style.backgroundSize = "cover";
+          $all(".total_name")[2].innerHTML = totalProminent[m].displayName;
+          $all(".total_score")[2].innerHTML ="总信用: " +  totalProminent[m].afterScore;
+          break;
+        default:
+          totalRankDetailTotal += rankList(totalProminent, m);
+          break;
+      }
+    }
+    $("#day_rank").innerHTML = dayRankDetailTotal;
+    $("#all_rank").innerHTML = totalRankDetailTotal;
+//
+//    $("#scroller").onscroll = function(e){
+//      var scrollTop = this.scrollTop;
+//      if (scrollTop > 260){
+//        $("#select_bar_top").style.display = "block";
+//        $("#header_bar").style.display = "none";
+//      } else {
+//        $("#select_bar_top").style.display = "none";
+//        $("#header_bar").style.display = "block";
+//
+//      }
+//    };
+
+    //////////////////////////////////
+
+    if(0<=creditScoreVal&&creditScoreVal<1000) {
+      imgArr[0] = "v_1@3x.png";
+    }else if(1000<=creditScoreVal&&creditScoreVal<2000) {
+      imgArr[0] = "v_2@3x.png";
+    }else if(2000<=creditScoreVal&&creditScoreVal<2500) {
+      imgArr[0] = "v_3@3x.png";
+    }else if(2500<=creditScoreVal&&creditScoreVal<3500){
+      imgArr[0] = "v_4@3x.png";
+    }else if(3500<=creditScoreVal&&creditScoreVal<4500){
+      imgArr[0] = "v_5@3x.png";
+    }else{
+      imgArr[0] = "v_6@3x.png";
+    }
+
+    imgArr[1] = "v_1_small@3x.png";
+    imgArr[2] = "v_2_small@3x.png";
+    imgArr[3] = "v_3_small@3x.png";
+    imgArr[4] = "v_4_small@3x.png";
+    imgArr[5] = "v_5_small@3x.png";
+    imgArr[6] = "v_6_small@3x.png";
+    imgArr[7] = "v_1_small_gray@3x.png";
+    imgArr[8] = "v_2_small_gray@3x.png";
+    imgArr[9] = "v_3_small_gray@3x.png";
+    imgArr[10] = "v_4_small_gray@3x.png";
+    imgArr[11] = "v_5_small_gray@3x.png";
+    imgArr[12] = "v_6_small_gray@3x.png";
+    imgArr[13] = "zv_bj@3x.jpg";
+    imgArr[14] = "v_kuai@3x.png";
+
+    for (var m =0;m<imgArr.length;m++){
+      imgArr[m] = "../../creditScore/img/" + imgArr[m];
+    }
+
+    var a = 0, b = imgArr.length;
+
+    function SImage(url, callback){
+      var img = new Image();
+      img.src = url;
+      if (img.complete){
+        a ++;
+        callback(a);
+        return
+      }
+      img.onload = function(){
+        a ++;
+        callback(a);
+      }
+    }
+
+    function iCall(v){
+      if (v<b){
+        SImage(imgArr[v], iCall);
+      }else if (v >= b){
+        a = 0;
+        animation();
+      }
+    }
+
+    iCall(a);
+
+    function animation(){
+      var stopTime = 0;
+
+      var creditScoreVal = $("#creditScore").innerHTML;
+      var theAbsolutely = $('#beat').innerHTML;
+
+      var level, theLength, num = 0, originCreditVal = 0, originCreditValLine = 0, time = null, originLength = 0, timeImg = null;
+
+      var creditInstructions = {title:'信用积分说明',value:[
+        {number:'4500以上',point: 4500,level:'王者',show:'../../creditScore/img/v_6_small@3x.png',hide:'../../creditScore/img/v_6_small_gray@3x.png'},
+        {number:'3500-4500',point: 3500,level:'lv5',show:'../../creditScore/img/v_5_small@3x.png',hide:'../../creditScore/img/v_5_small_gray@3x.png'},
+        {number:'2500-3499',point: 2500,level:'lv4',show:'../../creditScore/img/v_4_small@3x.png',hide:'../../creditScore/img/v_4_small_gray@3x.png'},
+        {number:'2000-2499',point: 2000,level:'lv3',show:'../../creditScore/img/v_3_small@3x.png',hide:'../../creditScore/img/v_3_small_gray@3x.png'},
+        {number:'1000-1999',point: 1000,level:'lv2',show:'../../creditScore/img/v_2_small@3x.png',hide:'../../creditScore/img/v_2_small_gray@3x.png'},
+        {number:'1000以下',point: 0,level:'lv1',show:'../../creditScore/img/v_1_small@3x.png',hide:'../../creditScore/img/v_1_small_gray@3x.png'}]};
+
+      if(0<=creditScoreVal&&creditScoreVal<1000) {
+        level = 1;
+        theLength = 20*(creditScoreVal/1000) + '%';
+      }else if(1000<=creditScoreVal&&creditScoreVal<2000) {
+        level = 2;
+        theLength = (20*(creditScoreVal-1000)/1000 + 20) + '%';
+      }else if(2000<=creditScoreVal&&creditScoreVal<2500) {
+        level = 3;
+        theLength = (20*(creditScoreVal-2000)/500 + 40) + '%';
+      }else if(2500<=creditScoreVal&&creditScoreVal<3500){
+        level = 4;
+        theLength = (20*(creditScoreVal-2500)/1000 + 60) + '%';
+      }else if(3500<=creditScoreVal&&creditScoreVal<4500){
+        level = 5;
+        theLength = (20*(creditScoreVal-3500)/1000 + 80) + '%';
+      }else{
+        level = 6;
+        theLength = "100%";
+      }
+
+      var statusArr = [true, true, true, true, true, true];
+      var statusImgArr = [true, true, true, true, true, true];
+
+      $("#win").innerHTML = "击败" + theAbsolutely + "的答友";
+
+
+      var scoreLi = "";
+      for (var i in creditInstructions.value){
+        var ruleLevel = creditInstructions.value[i].level;
+        var ruleHide = creditInstructions.value[i].hide;
+        var rulePoint = creditInstructions.value[i].point;
+
+        //信用积分进度
+        scoreLi = '<li class="flex-column-center-container score_img_li" style="flex:1;position:relative;">' +
+                '<div  class="score_img" style="background-image: url('+ ruleHide +')"></div>' +
+                '<div style="font-size:12px;color:#CFCBD5;line-height: 12px;">'+ rulePoint +'</div>' +
+                '</li>' + scoreLi;
+      }
+
+      $("#creditStatusBig").src = "../../creditScore/img/v_"+level+"@3x.png";
+      $("#scoreUl").innerHTML = scoreLi;
+
+      timeScore();
+      //积分动画计时和积分等级图片计时
+      var anArr = [5,4,3,2,1,0];
+
+      function timeScore(){
+        time = setInterval(function(){
+          if (originCreditVal >= creditScoreVal){
+            $("#myCreditScore").innerHTML = "我的信用积分" + creditScoreVal;
+            return clearInterval(time);
+          }
+          $("#myCreditScore").innerHTML = "我的信用积分" + originCreditVal;
+          if (creditScoreVal > 4500){
+            originCreditVal += parseInt(20*creditScoreVal/4500);
+          }else{
+            originCreditVal += 20;
+          }
+          originCreditValLine += 20;
+
+          for (var i in anArr){
+            if (i >= 3){
+              if(originCreditValLine >= (i*1000-500)){
+                scoreUrlClass[i].querySelector(".score_img").style.backgroundImage = "url('"+creditInstructions.value[anArr[i]].show+"')";
+                if (statusArr[i]){
+                  statusArr[i] = false;
+                  clearInterval(time);
+                  setTimeout(function(){
+                    timeScore();
+                  }, stopTime);
+                }
+              }
+            }else{
+              if(originCreditValLine >= (i*1000)){
+                scoreUrlClass[i].querySelector(".score_img").style.backgroundImage = "url('"+creditInstructions.value[anArr[i]].show+"')";
+                if (statusArr[i]){
+                  statusArr[i] = false;
+                  clearInterval(time);
+                  setTimeout(function(){
+                    timeScore();
+                  }, stopTime);
+                }
+              }
+            }
+          }
+        }, 1);
+      }
+
+      var payTime = creditScoreVal > 4500 ? 4500/20 : creditScoreVal/20;
+
+      var scoreUrlClass = document.querySelectorAll('.score_img_li');
+
+      timeImgScore();
+      //积分进度条动画
+      function timeImgScore(){
+        timeImg = setInterval(function(){
+          if (originLength >= parseInt(theLength)){
+            $("#scoreLine").style.width = theLength;
+            $("#scoreArc").style.left = theLength;
+            return clearInterval(timeImg);
+          }
+          $("#scoreLine").style.width = originLength + "%";
+          $("#scoreArc").style.left = originLength + "%";
+          originLength += parseInt(theLength)/payTime;
+
+          for(var j in [0,1,2,3,4]){
+            if (originLength >= j*20){
+              if (statusImgArr[j]) {
+                statusImgArr[j] = false;
+                clearInterval(timeImg);
+                setTimeout(function () {
+                  timeImgScore();
+                }, stopTime);
+              }
+            }
+          }
+        }, 1);
+      }
+    }
+  //};
+  /*]]>*/
+</script>
+</body>
+</html>
