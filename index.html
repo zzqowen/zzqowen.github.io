@@ -7,6 +7,35 @@
     a{
         font-size: 1rem;
     }
+    #timeCountX{
+        text-align: center;
+        border-radius: 5px;
+        background: rgba(0,0,0,.8);
+        width: 100px;
+        height: 100px;
+        padding-top: 10px;
+        box-sizing: border-box;
+    }
+    #svg{
+        -webkit-animation:myAnimation 1s linear infinite;
+        -o-animation:myAnimation 1s linear infinite;
+        animation:myAnimation 1s linear infinite;
+        display: inline-block;
+    }
+    @keyframes myAnimation {
+        0%{
+            transform: rotate(0deg);
+        }
+        100%{
+            transform: rotate(360deg);
+        }
+    }
+    .loading_text{
+        color: white;
+        font-size: 14px;
+    }
+
+
 </style>
 <head>
     <meta charset="UTF-8">
@@ -20,6 +49,29 @@
 <a href="http://www.rongcloud.cn/docs/"> 融云 </a>
 <a href="test/html/h/newCreditScoreAnimation.html"> 测试 </a>
 <a href="loading/index.html"> loading </a>
+
+<div id="timeCountX" class="time-count-x">
+    <svg width="50" height="50" viewBox="0 0 440 440" id="svg">
+        <defs>
+            <linearGradient x1="1" y1="0" x2="0" y2="0" id="gradient1">
+                <stop offset="0%" stop-color="#f7f7f7"></stop>
+                <stop offset="50%" stop-color="#d5d5d5"></stop>
+                <stop offset="100%" stop-color="#adadad"></stop>
+            </linearGradient>
+            <linearGradient x1="1" y1="1" x2="0" y2="0" id="gradient2">
+                <stop offset="0%" stop-color="#717171"></stop>
+                <stop offset="50%" stop-color="#848484"></stop>
+                <stop offset="100%" stop-color="#e5e5e5"></stop>
+            </linearGradient>
+        </defs>
+        <g transform="matrix(0,-1,1,0,0,440)">
+            <circle cx="220" cy="220" r="170" stroke-width="50" stroke="#f0f1f5" fill="none" stroke-dasharray="1069 1069"></circle>
+            <circle cx="220" cy="220" r="170" stroke-width="50" stroke="url('#gradient1')" fill="none" stroke-dasharray="1069 1069"></circle>
+            <circle cx="220" cy="220" r="170" stroke-width="50" stroke="url('#gradient2')" fill="none" stroke-dasharray="534.5 1069"></circle>
+        </g>
+    </svg>
+    <div class="loading_text">正在加载...</div>
+</div>
 
 </body>
 </html>
