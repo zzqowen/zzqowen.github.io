@@ -18,13 +18,20 @@
 <img src="" alt="" id="img">
 <img src="" alt="" id="img1">
 <div id="div"></div>
+<a href=""></a>
+<img src="" alt="" id="conImg">
 
 </body>
-
+<script src="js/compressPictures.js"></script>
 <script>
     var imgArr = [
         "http://www.bing.com/az/hprichbg/rb/UrbinoRooftops_ZH-CN9076169426_1920x1080.jpg"
     ];
+
+    var data = pictures.compress("../images/beauty1.jpg", 50, "png", function(data){
+        document.getElementById("conImg").setAttribute("xlink:href", data);
+        pictures.save(data);
+    });
 
     var img = document.getElementById("img");
     var img1 = document.getElementById("img1");
