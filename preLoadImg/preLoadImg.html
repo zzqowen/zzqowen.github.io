@@ -29,7 +29,8 @@
     ];
 
     var data = pictures.compress("../images/beauty1.jpg", 50, "png", function(data){
-        document.getElementById("conImg").setAttribute("xlink:href", data);
+        document.getElementById("conImg").setAttribute("src", data);
+
         pictures.save(data);
     });
 
