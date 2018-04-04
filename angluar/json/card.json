@@ -1,0 +1,307 @@
+[
+  {
+        "num": 1,
+        "val": 3,
+        "type": 1,
+        "url": "../image/card_pictuer/a_9.png"
+    }, {
+        "num": 2,
+        "val": 3,
+        "type": 2,
+        "url": "../image/card_pictuer/a_11.png"
+    }, {
+        "num": 3,
+        "val": 3,
+        "type": 3,
+        "url": "../image/card_pictuer/a_10.png"
+    }, {
+        "num": 4,
+        "val": 3,
+        "type": 4,
+        "url": "../image/card_pictuer/a_12.png"
+    }, {
+        "num": 5,
+        "val": 4,
+        "type": 1,
+        "url": "../image/card_pictuer/a_13.png"
+    }, {
+        "num": 6,
+        "val": 4,
+        "type": 2,
+        "url": "../image/card_pictuer/a_15.png"
+    }, {
+        "num": 7,
+        "val": 4,
+        "type": 3,
+        "url": "../image/card_pictuer/a_14.png"
+    }, {
+        "num": 8,
+        "val": 4,
+        "type": 4,
+        "url": "../image/card_pictuer/a_16.png"
+    },
+
+    {
+        "num": 9,
+        "val": 5,
+        "type": 1,
+        "url": "../image/card_pictuer/a_17.png"
+    }, {
+        "num": 10,
+        "val": 5,
+        "type": 2,
+        "url": "../image/card_pictuer/a_19.png"
+    }, {
+        "num": 11,
+        "val": 5,
+        "type": 3,
+        "url": "../image/card_pictuer/a_18.png"
+    }, {
+        "num": 12,
+        "val": 5,
+        "type": 4,
+        "url": "../image/card_pictuer/a_20.png"
+    },
+
+    {
+        "num": 13,
+        "val": 6,
+        "type": 1,
+        "url": "../image/card_pictuer/a_21.png"
+    }, {
+        "num": 14,
+        "val": 6,
+        "type": 2,
+        "url": "../image/card_pictuer/a_23.png"
+    }, {
+        "num": 15,
+        "val": 6,
+        "type": 3,
+        "url": "../image/card_pictuer/a_22.png"
+    }, {
+        "num": 16,
+        "val": 6,
+        "type": 4,
+        "url": "../image/card_pictuer/a_24.png"
+    },
+
+    {
+        "num": 17,
+        "val": 7,
+        "type": 1,
+        "url": "../image/card_pictuer/a_25.png"
+    }, {
+        "num": 18,
+        "val": 7,
+        "type": 2,
+        "url": "../image/card_pictuer/a_27.png"
+    }, {
+        "num": 19,
+        "val": 7,
+        "type": 3,
+        "url": "../image/card_pictuer/a_26.png"
+    }, {
+        "num": 20,
+        "val": 7,
+        "type": 4,
+        "url": "../image/card_pictuer/a_28.png"
+    },
+
+    {
+        "num": 21,
+        "val": 8,
+        "type": 1,
+        "url": "../image/card_pictuer/a_29.png"
+    }, {
+        "num": 22,
+        "val": 8,
+        "type": 2,
+        "url": "../image/card_pictuer/a_31.png"
+    }, {
+        "num": 23,
+        "val": 8,
+        "type": 3,
+        "url": "../image/card_pictuer/a_30.png"
+    }, {
+        "num": 24,
+        "val": 8,
+        "type": 4,
+        "url": "../image/card_pictuer/a_32.png"
+    },
+
+    {
+        "num": 25,
+        "val": 9,
+        "type": 1,
+        "url": "../image/card_pictuer/a_33.png"
+    }, {
+        "num": 26,
+        "val": 9,
+        "type": 2,
+        "url": "../image/card_pictuer/a_35.png"
+    }, {
+        "num": 27,
+        "val": 9,
+        "type": 3,
+        "url": "../image/card_pictuer/a_34.png"
+    }, {
+        "num": 28,
+        "val": 9,
+        "type": 4,
+        "url": "../image/card_pictuer/a_36.png"
+    },
+
+
+    {
+        "num": 29,
+        "val": 10,
+        "type": 1,
+        "url": "../image/card_pictuer/a_37.png"
+    }, {
+        "num": 30,
+        "val": 10,
+        "type": 2,
+        "url": "../image/card_pictuer/a_39.png"
+    }, {
+        "num": 31,
+        "val": 10,
+        "type": 3,
+        "url": "../image/card_pictuer/a_38.png"
+    }, {
+        "num": 32,
+        "val": 10,
+        "type": 4,
+        "url": "../image/card_pictuer/a_40.png"
+    },
+
+
+    {
+        "num": 33,
+        "val": 11,
+        "type": 1,
+        "url": "../image/card_pictuer/a_41.png"
+    }, {
+        "num": 34,
+        "val": 11,
+        "type": 2,
+        "url": "../image/card_pictuer/a_43.png"
+    }, {
+        "num": 35,
+        "val": 11,
+        "type": 3,
+        "url": "../image/card_pictuer/a_42.png"
+    }, {
+        "num": 36,
+        "val": 11,
+        "type": 4,
+        "url": "../image/card_pictuer/a_44.png"
+    },
+
+
+
+    {
+        "num": 37,
+        "val": 12,
+        "type": 1,
+        "url": "../image/card_pictuer/a_45.png"
+    }, {
+        "num": 38,
+        "val": 12,
+        "type": 2,
+        "url": "../image/card_pictuer/a_47.png"
+    }, {
+        "num": 39,
+        "val": 12,
+        "type": 3,
+        "url": "../image/card_pictuer/a_46.png"
+    }, {
+        "num": 40,
+        "val": 12,
+        "type": 4,
+        "url": "../image/card_pictuer/a_48.png"
+    },
+
+
+    {
+        "num": 41,
+        "val": 13,
+        "type": 1,
+        "url": "../image/card_pictuer/a_49.png"
+    }, {
+        "num": 42,
+        "val": 13,
+        "type": 2,
+        "url": "../image/card_pictuer/a_51.png"
+    }, {
+        "num": 43,
+        "val": 13,
+        "type": 3,
+        "url": "../image/card_pictuer/a_50.png"
+    }, {
+        "num": 44,
+        "val": 13,
+        "type": 4,
+        "url": "../image/card_pictuer/a_52.png"
+    },
+
+
+    {
+        "num": 45,
+        "val": 14,
+        "type": 1,
+        "url": "../image/card_pictuer/a_1.png"
+    }, {
+        "num": 46,
+        "val": 14,
+        "type": 2,
+        "url": "../image/card_pictuer/a_3.png"
+    }, {
+        "num": 47,
+        "val": 14,
+        "type": 3,
+        "url": "../image/card_pictuer/a_2.png"
+    }, {
+        "num": 48,
+        "val": 14,
+        "type": 4,
+        "url": "../image/card_pictuer/a_4.png"
+    },
+
+
+    {
+        "num": 49,
+        "val": 14,
+        "type": 1,
+        "url": "../image/card_pictuer/a_5.png"
+    }, {
+        "num": 50,
+        "val": 14,
+        "type": 2,
+        "url": "../image/card_pictuer/a_7.png"
+    }, {
+        "num": 51,
+        "val": 14,
+        "type": 3,
+        "url": "../image/card_pictuer/a_6.png"
+    }, {
+        "num": 52,
+        "val": 14,
+        "type": 4,
+        "url": "../image/card_pictuer/a_8.png"
+    }, {
+        "num": 53,
+        "val": 15,
+        "type": 5,
+        "url": "../image/card_pictuer/a_53.png"
+    }, {
+        "num": 54,
+        "val": 15,
+        "type": 5,
+        "url": "../image/card_pictuer/a_53.png"
+    }, {
+        "num": 55,
+        "val": 15,
+        "type": 5,
+        "url": "../image/card_pictuer/a_53.png"
+    }
+]

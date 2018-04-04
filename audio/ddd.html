@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #div {
+            width: 100%;
+            height: 300px;
+            border: 1px solid blue;
+            overflow: scroll;
+        }
+        .child {
+            height: 600px;
+            background: red;
+        }
+    </style>
+</head>
+<body>
+<div id="dv"><a href="zyzscheme://">asdgasg55555asgasgas</a>
+</div>
+<div id="div">
+    <div class="child">
+        2
+        2
+        2
+        2
+    </div>
+</div>
+<script>
+    window.location.href = 'zyzscheme://?roomId=99999';
+    dv.click();
+    var xx,yy,XX,YY,swipeX,swipeY ;
+    div.addEventListener('touchstart',function(event){
+        event.stopPropagation();//阻止冒泡
+//        event.preventDefault();//阻止浏览器默认事件
+        xx = event.targetTouches[0].screenX ;
+        yy = event.targetTouches[0].screenY ;
+        swipeX = true;
+        swipeY = true ;
+    })
+    div.addEventListener('touchmove',function(event){
+        XX = event.targetTouches[0].screenX ;
+        YY = event.targetTouches[0].screenY ;
+        if(swipeX && Math.abs(XX-xx)-Math.abs(YY-yy)>0)  //左右滑动
+        {
+            console.log('zy')
+            event.stopPropagation();//阻止冒泡
+            event.preventDefault();//阻止浏览器默认事件
+            swipeY = false ;
+            //左右滑动
+        }
+        else if(swipeY && Math.abs(XX-xx)-Math.abs(YY-yy)<0){  //上下滑动
+            console.log('sx')
+            swipeX = false ;
+            //上下滑动，使用浏览器默认的上下滑动
+        }
+    })
+    div.addEventListener('touchend',function(event){
+        event.stopPropagation();//阻止冒泡
+        event.preventDefault();//阻止浏览器默认事件
+    })
+</script>
+</body>
+</html>

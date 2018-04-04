@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="div" style="color: black;font-size: 30px;">adgasdgasdg</div>
+</body>
+<script src="../zq.js"></script>
+<script>
+//   boothBluePopu([{name: '999', uuid: '66666666'}, {name: '99', uuid: '22222222'}]);
+
+    function boothBluePopu(arr) {
+        var arr = arr || [];
+        var total = document.createElement('div');
+        var container = document.createElement('div');
+        var bg = document.createElement('div');
+        bg.onclick = function (){
+            document.body.removeChild(total);
+        };
+        cssStyle(container, {
+            'position': 'fixed',
+            'top': '20px',
+            'right': '20px',
+            'zIndex': '60',
+            'borderRadius': '5px',
+            'backgroundColor': 'white',
+            'height': '150px',
+            'overflow': 'auto'
+        });
+        cssStyle(bg, {
+            'position': 'fixed',
+            'width': '100%',
+            "height": '100%',
+            'backgroundColor': 'rgba(0,0,0,0.5)',
+            'top': '0',
+            "left": '0',
+            'zIndex': '50'
+        });
+
+        var title = document.createElement('div');
+        cssStyle(title, {
+            'width': '100px',
+            'height': '30px',
+            'textAlign': 'center',
+            'lineHeight': '30px',
+            'borderBottom': '1px solid #333'
+        });
+        title.innerHTML = '设备';
+        container.appendChild(title);
+
+        if (!isEmpty(arr)){
+            for (var i in arr) {
+                var content = document.createElement('div');
+                content.innerHTML = arr[i].name ? arr[i].name : arr[i].uuid;
+                content.setAttribute('uuid', arr[i].uuid);
+                cssStyle(content, {'height': '30px', 'borderBottom': '1px solid #ccc', 'margin': '0 5px', 'textAlign': 'center', 'lineHeight': '30px'});
+                content.onclick = function(){
+                    var uuid = this.getAttribute('uuid');
+                    console.log(uuid);
+                    document.body.removeChild(total);
+                };
+                container.appendChild(content);
+            }
+        }
+
+        total.appendChild(container);
+        total.appendChild(bg);
+        document.body.appendChild(total);
+
+        this.close = function(){
+            document.body.removeChild(total);
+        };
+
+        function isEmpty(value) {
+            return (Array.isArray(value) && value.length === 0)
+                    || (Object.prototype.isPrototypeOf(value) && Object.keys(value).length === 0);
+        }
+
+        function cssStyle(ele, cssObj) {
+            if (ele instanceof Array) {
+                for (var j in ele) {
+                    for (var i in cssObj) {
+                        ele[j].style[i] = cssObj[i];
+                    }
+                }
+            } else {
+                for (var i in cssObj) {
+                    ele.style[i] = cssObj[i];
+                }
+            }
+        }
+    }
+</script>
+</html>
