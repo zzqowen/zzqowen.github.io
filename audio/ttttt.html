@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: Microsoft Ya Hei, Arial;
+        }
+        img:before {
+            content: '';
+            display: block;
+            background: #000;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+<img src="http://b.hiphotos.baidu.com/image/pic/item/54fbb2fb43166d22ceac94a4452309f79052d223.jpg" alt="" id="img" style="width: 10%">
+<script>
+    var w;
+
+//    if (img.currentStyle) {
+//        w = img.currentStyle.width
+//    } else {
+//        w = getComputedStyle(img, null).width;
+//    }
+
+    console.log(w);
+    console.log(document.documentElement.clientWidth || document.body.clientWidth);
+
+//    mBinding.webView.loadUrl("javascript:(function(){"
+//            + "var objs = document.getElementsByTagName('img'); "
+//            + "for(var i=0;i<objs.length;i++)  " + "{"
+//            + "var img = objs[i];   "
+//            + "var windowWidth = document.documentElement.clientWidth || document.body.clientWidth;"
+//            + "var imgWidth;"
+//            + "if (img.currentStyle) {"
+//            + "    imgWidth = img.currentStyle.width;"
+//            + "} else {"
+//            + "    imgWidth = getComputedStyle(img,false).width"
+//            + "}"
+//            + "if (parseFloat(imgWidth) > parseFloat(windowWidth)/2) {"
+//            + "    img.style.width = '100%';   "
+//            + "    img.style.height = 'auto';   "
+//            + "} else {"
+//            + "    img.style.width = parseFloat(imgWidth) * 2 + 'px'; "
+//            + "    img.style.height = 'auto'; "
+//            + "}"
+//            + "}"
+//            + "})()");
+
+
+
+    var img = "javascript:(function(){"
+            + "var objs = document.getElementsByTagName('img'); "
+            + "for(var i=0;i<objs.length;i++)  " + "{"
+            + "var img = objs[i];   "
+            + "var windowWidth = document.documentElement.clientWidth || document.body.clientWidth;"
+            + "var imgWidth;"
+            + "if (img.currentStyle) {"
+            + "    imgWidth = img.currentStyle.width;"
+            + "} else {"
+            + "    imgWidth = getComputedStyle(img,false).width"
+            + "}"
+            + "if (parseFloat(imgWidth) > parseFloat(windowWidth)/2) {"
+            + "    img.style.width = '100%';   "
+            + "    img.style.height = 'auto';   "
+            + "} else {"
+            + "    img.style.width = parseFloat(imgWidth) * 2 + 'px'; "
+            + "    img.style.height = 'auto'; "
+            + "}"
+            + "}"
+            + "})()";
+    eval(img);
+
+</script>
+</body>
+</html>
