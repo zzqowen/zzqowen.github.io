@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>这是一个HTML5新提供的一个api，主要作用就是记录当前标签页在浏览器中的激活状态。所谓“激活状态”指的是当前标签是否正在被用户浏览。</h1>
+<div id="div"></div>
+<script>
+    var div = document.getElementById('div');
+    document.addEventListener("visibilitychange",function() {
+
+        if (document.visibilityState == "visible") {
+            div.innerText='欢迎回来';
+            console.log('欢迎回来')
+        }
+        if (document.visibilityState == "hidden") {
+            div.innerText='不要走';
+            console.log('不要走')
+        }
+    })
+</script>
+</body>
+</html>
