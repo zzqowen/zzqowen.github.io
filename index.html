@@ -43,7 +43,7 @@
     <title>写一个字</title>
 </head>
 <body>
-
+<script src="zq.js"></script>
 <a href="http://www.webhek.com/post/html5-canvas-cheat-sheet.html">canvas速查表</a>
 
 <a href="mac/mac.html"> MAC </a>
@@ -57,6 +57,13 @@
 <a href="CSS3/css.html">CSS3</a>
 <a href="nodeJs/node.html">nodeJs</a>
 <a href="webpack/webpack.html">webpack</a>
+
+<form action="http://192.168.1.134:8080/users" method="get">
+
+    <input type="file">
+    <br><br>
+    <input type="submit" value="Submit">
+</form>
 
 <iframe src="http://erwen.aihuawen.com/zqImageLoader/loader.html" frameborder="0" style="width: 200px;height: 200px"></iframe>
 
@@ -85,5 +92,8 @@
     <div class="loading_text">正在加载...</div>
 </div>
 
+<script>
+    $zq.IsPC();
+</script>
 </body>
 </html>
