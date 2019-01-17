@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="html2canvas.min.js"></script>
+    <style>
+        .img {
+            background: url('./winner.png') no-repeat center center;
+            background-size: contain;
+            width: 112px;
+            height: 41px;
+        }
+    </style>
+</head>
+<body>
+<div class="img" id="img"></div>
+<img src="./winner.png" alt="" style="width: 112px; height: 41px;" id="img1">
+<script>
+    var getPixelRatio = function(context) {
+        var backingStore = context.backingStorePixelRatio ||
+                context.webkitBackingStorePixelRatio ||
+                context.mozBackingStorePixelRatio ||
+                context.msBackingStorePixelRatio ||
+                context.oBackingStorePixelRatio ||
+                context.backingStorePixelRatio || 1;
+
+        return (window.devicePixelRatio || 1) / backingStore;
+    };
+    var shareContent = document.getElementById('img1');//需要截图的包裹的（原生的）DOM 对象
+    var width = shareContent.offsetWidth; //获取dom 宽度
+    var height = shareContent.offsetHeight; //获取dom 高度
+    var canvas = document.createElement("canvas"); //创建一个canvas节点
+    var ctx = canvas.getContext('2d');
+    var scale = getPixelRatio(ctx); //定义任意放大倍数 支持小数
+    canvas.width = width * scale; //定义canvas 宽度 * 缩放
+    canvas.height = height * scale; //定义canvas高度 *缩放
+    canvas.style.width = width * scale + 'px';
+    canvas.style.height = height * scale + 'px';
+    ctx.scale(scale, scale); //获取context,设置scale
+    var opts = {
+        // scale: scale, // 添加的scale 参数
+        canvas: canvas, //自定义 canvas
+        logging: true, //日志开关，便于查看html2canvas的内部执行流程
+        width: canvas.width, //dom 原始宽度
+        height: canvas.height,
+        useCORS: true // 【重要】开启跨域配置
+    };
+
+    html2canvas(shareContent, opts).then(function (canvas) {
+        var context = canvas.getContext('2d');
+        // 【重要】关闭抗锯齿
+        context.mozImageSmoothingEnabled = false;
+        context.webkitImageSmoothingEnabled = false;
+        context.msImageSmoothingEnabled = false;
+        context.imageSmoothingEnabled = false;
+        document.body.appendChild(canvas);
+        canvas.style.width = canvas.width / scale + "px";
+        canvas.style.height = canvas.height / scale + "px";
+        canvas.style.position = 'fixed';
+        canvas.style.zIndex = '30000000';
+        canvas.style.top = 0;
+
+    });
+</script>
+</body>
+</html>

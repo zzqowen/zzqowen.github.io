@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/main.css">
+    <script type="text/javascript" src="js/common.js"></script>
+</head>
+<body>
+<h1 class="title">mac显示隐藏文件命令</h1>
+<div class="content">defaults write com.apple.finder AppleShowAllFiles Yes && killall Finder</div>
+<h1 class="title">mac不现实隐藏文件命令</h1>
+<div class="content">defaults write com.apple.finder AppleShowAllFiles No && killall Finder</div>
+<h1 class="title">mac命令行安装需要管理员权限Please try running this command again as root/Administrator</h1>
+<div class="content">sudo chown -R $USER /usr/local</div>
+<h1 class="title">MAC 更改个人目录名称</h1>
+<div class="content">
+    <img class="mac_change_name" src="image/mac1.jpg" alt="更改个人的目录名称">
+</div>
+<h1 class="title">Mac系统的包管理软件(Homebrew)安装3</h1>
+<div class="content">
+    <div>安装: ruby -e "$(curl --insecure -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"</div>
+    <div>卸载: ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall)"</div>
+</div>
+<h1 class="title">python 打包.app/.exe</h1>
+<div class="content">
+    py2app 和 pyinstaller
+</div>
+<h1 class="title">Mac生成icns图片</h1>
+<div class="content">
+    <img src="./image/icnsImg.png" alt="">
+</div>
+<script type="text/javascript" src="js/main.js"></script>
+</body>
+</html>
