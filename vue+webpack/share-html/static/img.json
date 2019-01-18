@@ -1,0 +1,8 @@
+{
+  "images": [
+    {"src": "/static/img/t1.png"},
+    {"src": "/static/img/t2.png"},
+    {"src": "/static/img/t3.png"},
+    {"src": "/static/img/statisticsImg.png"}
+  ]
+}
