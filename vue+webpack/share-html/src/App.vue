@@ -76,6 +76,14 @@
     transform: translate(100%, 0);
   }
 
+  .overText3 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
 
   #app {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;

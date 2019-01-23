@@ -6,7 +6,10 @@ import router from './router';
 import axios from 'axios';
 import qs from 'Qs';
 
-axios.defaults.baseURL='https://erwen.aihuawen.com';
+// let server = 'http://test1.aihuawen.com';
+let server = 'https://erwen.aihuawen.com';
+axios.defaults.baseURL=server;
+Vue.prototype.server = server;
 Vue.config.productionTip = false;
 Vue.prototype.$axios = axios;
 Vue.prototype.$qs = qs;
