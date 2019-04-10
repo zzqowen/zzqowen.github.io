@@ -2,7 +2,10 @@
   <div class="page">
     <my-scroll ref="myScrollRef" :on-refresh="onRefresh" :on-pull="onPull" :get-scroll-top="getTop" :scroll-state="scrollState">
       <div slot="scrollList">
-        <div class="header_img bg_img" :style="{backgroundImage:`url(${handleImg(dataObj.bannerList[0] ? dataObj.bannerList[0].imgPath : '')})`}"></div>
+        <div class="header_img bg_img flex-column-center-container" :style="{backgroundImage:`url(${handleImg(dataObj.bannerList[0] ? dataObj.bannerList[0].imgPath : '')})`}">
+          <div style="font-size: 0.7rem;">{{dataObj.bannerList[0] ? dataObj.bannerList[0].title : ''}}</div>
+          <div style="font-size: 0.4rem;white-space: pre-wrap;text-align: center;margin-top: 0.42rem;">{{dataObj.bannerList[0] ? dataObj.bannerList[0].describes : ''}}</div>
+        </div>
         <div class="header_title_container">
           <div class="header_title flex-space-container" v-for="(item, index) in dataObj.categoryList" :key="index"
             v-if="categoryId == item.id">
