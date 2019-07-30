@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            color: violet;
+            column-count: 3;
+            column-gap: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class='container'>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <script>
+        var container = document.querySelector('.container');
+        var divCon = container.querySelectorAll('div');
+        console.log(container, divCon);
+        var colorArr = ['blue', 'yellow', 'green', 'red', 'violet', 'gray', 'black']
+        for (var i in divCon) {
+            var random = parseInt(Math.random() * 7) + 1;
+            console.log(random);
+            // divCon[i].style.width='200px';
+            divCon[i].style.backgroundColor = colorArr[random];
+            divCon[i].style.height = 20 * random + 'px';
+        }
+    </script>
+</body>
+
+</html>
