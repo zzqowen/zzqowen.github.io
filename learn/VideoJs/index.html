@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <!-- <script>window.HELP_IMPROVE_VIDEOJS = false;</script> -->
+  <link href="./css/video-js.7.3.0.min.css" rel="stylesheet">
+  <script src="./js/video.7.3.0.min.js"></script>
+  <script src="./js/videojs-flash.min.js"></script>
+  <style>
+    .vjs-paused .vjs-big-play-button,
+    .vjs-paused.vjs-has-started .vjs-big-play-button {
+        display: block;
+    }
+
+    .video-js .vjs-time-control{display:block;}
+    .video-js .vjs-remaining-time{display: none;}
+  </style>
+</head>
+
+<body>
+  <video width="300" id="my-player" class="video-js vjs-big-play-centered" controls preload="auto" poster="./media/oceans.png" data-setup='{}'>
+    <source src="./media/oceans.flv">
+    </source>
+    <!-- <source src="./media/oceans.mp4" type="video/mp4">
+    </source>
+    <source src="./media/oceans.webm" type="video/webm">
+    </source>
+    <source src="./media/oceans.ogg" type="video/ogg">
+    </source> -->
+    <p class="vjs-no-js">
+      To view this video please enable JavaScript, and consider upgrading to a
+      web browser that
+      <a href="https://videojs.com/html5-video-support/" target="_blank">
+        supports HTML5 video
+      </a>
+    </p>
+  </video>
+  <script>
+    var options = {
+      // swf = "./js/videojs-flash.min.js"
+    };
+
+    var player = videojs('my-player', options, function onPlayerReady() {
+      videojs.log('Your player is ready!');
+
+      // In this context, `this` is the player that was created by Video.js.
+      // this.play();
+
+      // How about an event listener?
+      this.on('ended', function () {
+        videojs.log('Awww...over so soon?!');
+      });
+    });
+  </script>
+</body>
+</html>

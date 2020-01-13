@@ -31,6 +31,27 @@
 <div class="content">
     <img src="./image/icnsImg.png" alt="">
 </div>
+<div class="title">MAC terminal ssh保持连接</div>
+<div class="content" style="white-space: pre-wrap;">
+client：
+
+sudo vi /etc/ssh/ssh_config
+
+添加:
+# 断开时重试连接的次数
+ServerAliveCountMax 5
+
+# 每隔5秒自动发送一个空的请求以保持连接
+ServerAliveInterval 5
+
+server：
+
+服务端超时要比这个长就好
+
+vi /etc/ssh/ssh_config
+
+ClientAliveInterval 60
+</div>
 <script type="text/javascript" src="js/main.js"></script>
 </body>
 </html>
