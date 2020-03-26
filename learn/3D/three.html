@@ -1,89 +1,121 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="stylesheet" href="css/three.css">
-    <script src="three.min.js"></script>
-</head>
-<body>
-<div id="world"></div>
-<script>
-    var Colors = {
-        red:0xf25346,
-        white:0xd8d0d1,
-        brown:0x59332e,
-        pink:0xF5986E,
-        brownDark:0x23190f,
-        blue:0x68c3c0
-    };
+<html lang="zh-cn">
 
-    window.addEventListener('load', init, false);
-    function init() {
-        // 创建场景，相机和渲染器
-        createScene();
-        // 添加光源
-        createLights();
-        // 添加对象
-        createPlane();
-        createSea();
-        createSky();
-        // 调用循环函数，在每帧更新对象的位置和渲染场景
-        loop();
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src='./js/stats.min.js'></script>
+  <script src="./js/three.min.js"></script>
+  <script src="./js/tween.umd.js"></script>
+  <script src="js/RequestAnimationFrame.js"></script>
+  <script>
+    // (function(){var script=document.createElement('script');script.onload=function(){var stats=new Stats();document.body.appendChild(stats.dom);requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};script.src='//mrdoob.github.io/stats.js/build/stats.min.js';document.head.appendChild(script);})()
+  </script>
+  <style>
+    div#canvas-frame {
+      border: 0 none;
+      cursor: pointer;
+      width: 100%;
+      height: 600px;
+      background-color: #fefefe;
+    }
+  </style>
+</head>
+
+<body onload="load()">
+  <div id="canvas-frame"></div>
+  <script>
+    var canvasFrame = document.getElementById('canvas-frame');
+    var width = canvasFrame.clientWidth;
+    var height = canvasFrame.clientHeight;
+    var renderer;
+
+    function initThree() {
+      renderer = new THREE.WebGLRenderer();
+      renderer.setSize(width, height);
+      canvasFrame.appendChild(renderer.domElement);
+      renderer.setClearColor(0xf3f3f3, 1);
     }
 
-    // 创建场景
-    scene = new THREE.Scene();
+    var scene;
 
-    // 在场景中添加雾的效果；样式上使用和背景一样的颜色
-    scene.fog = new THREE.Fog(0xf7d9aa, 100, 950);
+    function initScene() {
+      scene = new THREE.Scene();
+    }
 
-    // 创建相机
-    aspectRatio = WIDTH / HEIGHT;
-    fieldOfView = 60;
-    nearPlane = 1;
-    farPlane = 10000;
-    /**
-     * PerspectiveCamera 透视相机
-     * @param fieldOfView 视角
-     * @param aspectRatio 纵横比
-     * @param nearPlane 近平面
-     * @param farPlane 远平面
-     */
-    camera = new THREE.PerspectiveCamera(
-            fieldOfView,
-            aspectRatio,
-            nearPlane,
-            farPlane
-    );
+    var camera;
 
-    // 设置相机的位置
-    camera.position.x = 0;
-    camera.position.z = 200;
-    camera.position.y = 100;
+    function initCamera() {
+      camera = new THREE.PerspectiveCamera(100, width / height, 0.1, 10000);
+      camera.position.x = 0;
+      camera.position.y = 0;
+      camera.position.z = 10;
+      camera.up.x = 0;
+      camera.up.y = 0;
+      camera.up.z = 0;
+    }
 
-    // 创建渲染器
-    renderer = new THREE.WebGLRenderer({
-        // 在 css 中设置背景色透明显示渐变色
-        alpha: true,
-        // 开启抗锯齿，但这样会降低性能。
-        // 不过，由于我们的项目基于低多边形的，那还好 :)
-        antialias: true
-    });
+    var light;
 
-    // 定义渲染器的尺寸；在这里它会填满整个屏幕
-    renderer.setSize(WIDTH, HEIGHT);
+    function initLight() {
+      light = new THREE.DirectionalLight(0xff0000, 1.0, 0);
+      light.position.set(100, 100, 200);
+      scene.add(light);
+    }
 
-    // 打开渲染器的阴影地图
-    renderer.shadowMap.enabled = true;
+    var cube;
 
-    // 在 HTML 创建的容器中添加渲染器的 DOM 元素
-    container = document.getElementById('world');
-    container.appendChild(renderer.domElement);
+    function initObject() {
+      var geometry = new THREE.Geometry();
+      geometry.vertices.push(new THREE.Vector3(0, -3, 0));
+      geometry.vertices.push(new THREE.Vector3(0, 3, 0));
 
-    // 监听屏幕，缩放屏幕更新相机和渲染器的尺寸
-    window.addEventListener('resize', handleWindowResize, false);
-</script>
+      for (var i = 0; i <= 20; i++) {
 
+        var line1 = new THREE.Line(geometry, new THREE.LineBasicMaterial({
+          color: 0xff0000,
+          opacity: 0.2
+        }));
+        // console.log((i * 0.1) - 0.1)
+        line1.position.x = (i * 0.2) - 0.1;
+        scene.add(line1);
+
+        var line2 = new THREE.Line(geometry, new THREE.LineBasicMaterial({
+          color: 0x000000,
+          opacity: 0.2
+        }));
+        line2.position.y = (i * 0.2) - 0.1;
+        line2.rotation.z = 90 * Math.PI / 180;
+        scene.add(line2);
+
+      }
+    }
+
+    function load() {
+      initThree();
+      initCamera();
+      initScene();
+      initLight();
+      initObject();
+      new TWEEN.Tween( camera.position)
+            .to( { z: 1 }, 3000 ).repeat( Infinity ).start();
+      animate()
+      
+    }
+
+    var stats = new Stats();
+    document.body.appendChild(stats.dom);
+    function animate() {
+      // renderer.clear();
+      renderer.render(scene, camera);
+
+      requestAnimationFrame(animate)
+      stats.update();
+      TWEEN.update();
+
+    };
+  </script>
 </body>
+
 </html>
