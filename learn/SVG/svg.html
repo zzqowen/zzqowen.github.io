@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>svg</title>
+  <style>
+    html, body, svg {
+      padding: 0;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- <img src="./dir/test.svg" alt=""> -->
+  <svg viewBox="0 0 1000 1000"
+    x="100"
+    y="100"
+     xmlns="http://www.w3.org/2000/svg" 
+     xmlns:xlink="http://www.w3.org/1999/xlink">
+      <!-- <rect x="10" y="10" width="200" height="200" fill="#000" storke="#000" style="fill: black;">
+        <animate attributeType="XML"
+          attributeName="y"
+          from="10" to="200"
+          dur="1s"
+          repeatCount="1"/>
+      </rect> -->
+
+      <path d="M 100 100 L 300 100 L 200 300 z"
+        fill="orange" stroke="black" stroke-width="3" />
+
+        <path fill="#F7931E" d="M37,17v15H14V17H37z M50,0H0v50h50V0z"/>
+
+      <path d="M 50, 50 C 50,50 500,100 100,100 50,50" stroke="red" stroke-width="5" fill="transparent" />
+      <g stroke="green" fill="white" stroke-width="5">
+        <circle cx="25" cy="25" r="15" />
+        <circle cx="40" cy="25" r="15" />
+        <circle cx="55" cy="25" r="15" />
+        <circle cx="70" cy="25" r="15" />
+      </g>
+      <defs>
+    <filter id="image">
+      <feImage xlink:href="./img/jiaoseguanl.png"/>
+    </filter>
+  </defs>
+
+  <rect x="200" y="200" width="500" height="500"
+      style="filter:url(#image);"/>
+</svg>
+</body>
+</html>

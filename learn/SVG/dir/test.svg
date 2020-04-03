@@ -1,0 +1,8 @@
+<svg width="140" height="30"
+     xmlns="http://www.w3.org/2000/svg" 
+     xmlns:xlink="http://www.w3.org/1999/xlink">
+    <a xlink:href="http://www.baidu.com" target="_blank" >
+        <rect x="0" y="0" width="120" height="30" style="background-color: #000;" rx="15"/>
+        <text x="60"  y="21" style="" fill="white" text-anchor="middle">我的第一个svg</text>
+    </a>
+</svg>
