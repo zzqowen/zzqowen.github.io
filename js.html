@@ -33,7 +33,28 @@
 .pie:hover:before{
   animation-play-state: running;
 } */
+.cf:after {
+  content: '';
+  display: block;
+}
+
+.left {
+    float: left;
+    width: 200px;
+    height: 100%;
+    background-color: red;
+}
+.right {
+    overflow:hidden;
+    background-color: blue;
+    height: 100%;
+}
 </style>
 <div class="pie"></div>
+
+<div class="cf" style="height: 400px;">
+  <div class='left'></div>
+  <div class='right'></div>
+</div>
 </body>
 </html>
