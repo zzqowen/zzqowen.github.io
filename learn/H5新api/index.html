@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <div id="dd">亏大了付款</div>
+  <a href="./component/crossOriginUpload.html">asdfas</a>
+  <iframe id="ifr" src="./component/c.html" frameborder="0"></iframe>
+  <script>
+    //postmessage
+    if (typeof window.postMessage === undefined) {
+      console.log('浏览器不支持');
+      document.getElementById('ifr').contentWindow.postMessage('message', '试试')
+    }
+
+   
+
+    
+
+
+    var orignalSetItem = localStorage.setItem;
+    localStorage.setItem = function(key,newValue){
+        var setItemEvent = new Event("setItemEvent");
+        setItemEvent.key=key;
+        setItemEvent.newValue = newValue;
+        window.dispatchEvent(setItemEvent);
+        orignalSetItem.apply(this,arguments);
+    }
+
+    setTimeout(function() {
+      localStorage.setItem('name', '89898')
+    }, 3000)
+
+    window.addEventListener("setItemEvent", function(e) {
+      console.log(e)
+    });
+  </script>
+</body>
+</html>

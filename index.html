@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<style>
+    html{
+        font-size: 16px;
+    }
+    a{
+        font-size: 1rem;
+    }
+    #timeCountX{
+        text-align: center;
+        border-radius: 5px;
+        background: rgba(0,0,0,.8);
+        width: 100px;
+        height: 100px;
+        padding-top: 10px;
+        box-sizing: border-box;
+    }
+    #svg{
+        -webkit-animation:myAnimation 1s linear infinite;
+        -o-animation:myAnimation 1s linear infinite;
+        animation:myAnimation 1s linear infinite;
+        display: inline-block;
+    }
+    @keyframes myAnimation {
+        0%{
+            transform: rotate(0deg);
+        }
+        100%{
+            transform: rotate(360deg);
+        }
+    }
+    .loading_text{
+        color: white;
+        font-size: 14px;
+    }
+
+
+</style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width ,height=device-height,initial-scale=1.0,user-scalable=no,maximum-scale=1.0,minimum-scale=1.0" >
+    <title>我的</title>
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon"/>
+</head>
+<body>
+<script src="zq.js"></script>
+<a href="http://www.webhek.com/post/html5-canvas-cheat-sheet.html">canvas速查表</a>
+
+<a href="./learn/mac/mac.html"> MAC </a>
+<a href="./learn/canvas/html/writing.html"> CANVAS </a>
+<a href="./learn/http://www.rongcloud.cn/docs/"> 融云 </a>
+<a href="./learn/test/html/h/newCreditScoreAnimation.html"> 测试 </a>
+<a href="./learn/gitSever/git.html">Centos搭建Git服务器</a>
+<a href="./learn/gitSever/git.html">Centos上Node服务器搭建</a>
+<a href="./learn/loading/index.html"> loading </a>
+<a href="./learn/preLoadImg/preLoadImg.html">图片预加载</a>
+<a href="./learn/CSS3/css.html">CSS3</a>
+<a href="./learn/nodeJs/node.html">nodeJs</a>
+<a href="./learn/webpack/webpack.html">webpack</a>
+
+<form action="http://192.168.1.134:8080/users" method="get">
+    <input type="file">
+    <br><br>
+    <input type="submit" value="Submit">
+</form>
+
+<div>关于字体font-spider</div>
+
+<iframe src="http://erwen.aihuawen.com/zqImageLoader/loader.html" frameborder="0" style="width: 200px;height: 200px"></iframe>
+
+<p>chmod -R a+rwx ./node_modules</p>
+
+<div id="timeCountX" class="time-count-x">
+    <svg width="50" height="50" viewBox="0 0 440 440" id="svg">
+        <defs>
+            <linearGradient x1="1" y1="0" x2="0" y2="0" id="gradient1">
+                <stop offset="0%" stop-color="#f7f7f7"></stop>
+                <stop offset="50%" stop-color="#d5d5d5"></stop>
+                <stop offset="100%" stop-color="#adadad"></stop>
+            </linearGradient>
+            <linearGradient x1="1" y1="1" x2="0" y2="0" id="gradient2">
+                <stop offset="0%" stop-color="#717171"></stop>
+                <stop offset="50%" stop-color="#848484"></stop>
+                <stop offset="100%" stop-color="#e5e5e5"></stop>
+            </linearGradient>
+        </defs>
+        <g transform="matrix(0,-1,1,0,0,440)">
+            <circle cx="220" cy="220" r="170" stroke-width="50" stroke="#f0f1f5" fill="none" stroke-dasharray="1069 1069"></circle>
+            <circle cx="220" cy="220" r="170" stroke-width="50" stroke="url('#gradient1')" fill="none" stroke-dasharray="1069 1069"></circle>
+            <circle cx="220" cy="220" r="170" stroke-width="50" stroke="url('#gradient2')" fill="none" stroke-dasharray="534.5 1069"></circle>
+        </g>
+    </svg>
+    <div class="loading_text">正在加载...</div>
+</div>
+
+<script>
+    $zq.IsPC();
+</script>
+</body>
+</html>

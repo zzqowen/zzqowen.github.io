@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="basket.full.min.js"></script>
+</head>
+<body>
+  <style>
+@keyframes spin{
+  to{transform: rotate(.5turn);}
+}
+@keyframes bg{50%{background:#655;}}
+
+.pie{
+  width: 40px;height: 100px;
+  position:relative;
+  background-image: linear-gradient(270deg, transparent 5%,#655 0);
+}
+/* .pie:before{
+  content:'';
+  position:absolute;
+  top: 0;left: 50%;
+  width: 50%;height: 100%;
+  border-radius: 0 100% 100% 0 /50%;
+  background-color: inherit;
+  transform-origin: left;
+  animation: spin 3s linear infinite,bg 6s step-end infinite;
+  animation-play-state: paused;
+}
+.pie:hover:before{
+  animation-play-state: running;
+} */
+.cf:after {
+  content: '';
+  display: block;
+}
+
+.left {
+    float: left;
+    width: 200px;
+    height: 100%;
+    background-color: red;
+}
+.right {
+    overflow:hidden;
+    background-color: blue;
+    height: 100%;
+}
+</style>
+<div class="pie"></div>
+
+<div class="cf" style="height: 400px;">
+  <div class='left'></div>
+  <div class='right'></div>
+</div>
+</body>
+</html>

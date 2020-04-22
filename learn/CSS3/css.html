@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        .wrap{
+            position:absolute;
+            width: 400px;
+            border:1px solid black;
+        }
+        #mask{
+            height: 300px;
+            overflow: hidden;
+            background:url(http://sandbox.runjs.cn/uploads/rs/142/wat3wtnz/dongzhi.jpg) no-repeat center center;
+            -webkit-mask : url(http://sandbox.runjs.cn/uploads/rs/142/wat3wtnz/mask.png) no-repeat;
+            animation: 2s maskPosition infinite alternate;
+        }
+        #mask:hover{
+            animation: none;
+        }
+        @keyframes maskPosition{
+            0%{-webkit-mask-position:0 0;}
+            100%{-webkit-mask-position:100% 100%;}
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div id="mask"></div>
+</div>
+<script>
+    var oBox = document.getElementById('mask');
+    oBox.onmousemove = function(e){
+        e = e || event;
+        oBox.style.WebkitMaskPosition=(e.clientX-50)+"px "+ (e.clientY-50)+"px";
+    }
+</script>
+</body>
+</html>

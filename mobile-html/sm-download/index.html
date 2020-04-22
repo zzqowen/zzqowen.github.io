@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="format-detection" content="address=no">
+  <meta name="applicable-device" content="mobile">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>顺秒</title>
+  <script type="text/javascript">
+   var info = {
+      android: ['版本v4.3.0大小：34.8MB', '更新时间：2020-04-17'],
+      iphone: ['版本v4.3.0大小：34.8MB', '更新时间：2020-04-17'],
+      yto: ['版本v4.3.0大小：34.8MB', '更新时间：2020-04-17'],
+      yd: ['版本v4.3.0大小：34.8MB', '更新时间：2020-04-17'],
+    }
+    var everyStatus = null;
+    var getUserAgent = null;
+    (function (doc, win) {
+      var docEl = doc.documentElement,
+        resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+        recalc = function () {
+          var clientWidth = docEl.clientWidth;
+          if (!clientWidth) return;
+          var size = 100 * (clientWidth / 750)
+          if (size > 80) size = 80;
+          docEl.style.fontSize = size + 'px';
+          if (getUserAgent) getUserAgent()
+          if (everyStatus) everyStatus()
+        };
+
+      if (!doc.addEventListener) return;
+      win.addEventListener(resizeEvt, recalc, false);
+      doc.addEventListener('DOMContentLoaded', recalc, false);
+    })(document, window);
+  </script>
+</head>
+<style>
+  html,
+  body,
+  div,
+  span,
+  button,
+  input,
+  textarea,
+  a,
+  img {
+    margin: 0;
+    padding: 0;
+  }
+
+  img {
+    vertical-align: top;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  html,
+  body {
+    background: #fff;
+  }
+
+  body {
+    background: url('./bg-e.png') repeat center top;
+    background-size: 100%;
+    position: relative;
+  }
+
+  .body-bg {
+    padding-top: 32%;
+    color: #666;
+    background: url('./bg.png') no-repeat center top;
+    background-size: 100%;
+    font-size: 0.14rem;
+    line-height: 1.2;
+    
+  }
+
+  .container {
+    margin: 0 auto;
+    width: 90.2%;
+    min-height: 400px;
+    background: white;
+    border-radius: 0.15rem;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    padding-bottom: 0.9rem;
+  }
+
+  .every-container {
+    padding: 0.72rem 0 0.17rem;
+    text-align: center;
+    display: none;
+  }
+
+  .title-img-con {
+    text-align: left;
+    padding: 0 0.5rem;
+  }
+
+  .title-img {
+    width: 2.74rem;
+  }
+
+  .logo-con {
+    text-align: center;
+  }
+
+  .logo-icon {
+    margin-top: 0.53rem;
+    width: 0.88rem;
+  }
+
+  .logo-title {
+    font-size: 0.3rem;
+    padding-top: 0.1rem;
+  }
+
+  .apk-info {
+    white-space: pre-wrap;
+    padding-top: 0.25rem;
+  }
+
+  .apk-info>div {
+    text-align: left;
+    display: inline-block;
+    font-size: 0.26rem;
+    line-height: 0.42rem;
+    margin-left: -0.36rem;
+  }
+
+  .apk-code {
+    padding-top: 0.3rem;
+    padding-bottom: 0.55rem;
+  }
+
+  .apk-code img {
+    width: 1.63rem;
+  }
+
+  .downlod-btn {
+    width: 3.1rem;
+    line-height: 0.8rem;
+    background-color: #4187FF;
+    border-radius: 0.4rem;
+    color: white;
+    font-size: 0.32rem;
+    font-weight: bold;
+    margin: 0 auto;
+  }
+
+  .tips {
+    font-size: 0.26rem;
+    padding-top: 0.3rem;
+  }
+
+  .warn {
+    color: #FA3737;
+  }
+
+  #guide {
+    padding: 0.4rem 0.86rem 0.4rem 0.3rem;
+    font-size: 0.28rem;
+    color: #CCCCCC;
+    background: rgba(0, 0, 0, 0.8);
+    position: fixed;
+    left: 0;
+    top: 0;
+    line-height: 1.3;
+    display: none;
+  }
+
+  .arrow {
+    position: absolute;
+    top: 0.16rem;
+    right: 0.25rem;
+    width: 0.56rem;
+  }
+</style>
+
+<body>
+  <div id="guide">点击右上角按钮，然后在弹出的菜单中，点击浏览器打开，即可安装
+    <img src="./arrow.png" alt="" class="arrow">
+  </div>
+  <div class="body-bg">
+    <div class="container">
+      <div class="every-container android-box">
+        <div class="title-img-con">
+          <img src="./android.png" alt="安卓" class="title-img">
+        </div>
+        <div class="logo-con">
+          <img src="./logo.png" alt="顺秒" class="logo-icon">
+          <div class="logo-title">顺秒</div>
+        </div>
+        <div class="apk-info">
+          <div id="android"></div>
+        </div>
+        <div class="apk-code">
+          <img src="./sm-code.png" alt="二维码">
+        </div>
+        <div class="downlod-btn" onclick="download('android')">点击安装</div>
+        <div class="tips">或者使用手机扫描二维码安装</div>
+      </div>
+
+      <div class="every-container iphone-box">
+        <div class="title-img-con">
+          <img src="./iphone.png" alt="苹果" class="title-img">
+        </div>
+        <div class="logo-con">
+          <img src="./logo.png" alt="顺秒" class="logo-icon">
+          <div class="logo-title">顺秒</div>
+        </div>
+        <div class="apk-info">
+          <div id="iphone"></div>
+        </div>
+        <div class="apk-code">
+          <img src="./iphone-code.png" alt="二维码">
+        </div>
+        <div class="downlod-btn" onclick="download('iphone')">点击安装</div>
+        <div class="tips">或者使用手机扫描二维码安装</div>
+      </div>
+
+      <div class="every-container yto-box">
+        <div class="title-img-con">
+          <img src="./yto.png" alt="圆通" class="title-img">
+        </div>
+        <div class="logo-con">
+          <img src="./logo.png" alt="顺秒" class="logo-icon">
+          <div class="logo-title">顺秒</div>
+        </div>
+        <div class="apk-info">
+          <div id="yto"></div>
+        </div>
+        <div class="apk-code">
+          <img src="./yto-code.png" alt="二维码">
+        </div>
+        <div class="downlod-btn" onclick="download('yto')">点击安装</div>
+        <div class="tips warn">注意：需要把工业机上的“圆通外场”先卸载才能安装</div>
+      </div>
+
+      <div class="every-container yd-box">
+        <div class="title-img-con">
+          <img src="./yd.png" alt="韵达" class="title-img">
+        </div>
+        <div class="logo-con">
+          <img src="./logo.png" alt="顺秒" class="logo-icon">
+          <div class="logo-title">顺秒</div>
+        </div>
+        <div class="apk-info">
+          <div id="yd"></div>
+        </div>
+        <div class="apk-code">
+          <img src="./yd-code.png" alt="二维码">
+        </div>
+        <div class="downlod-btn" onclick="download('yd')">点击安装</div>
+        <div class="tips warn">注意：需要把工业机上的“小达助手”先卸载才能安装</div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var u = null;
+    var isAndroid = false;
+    var isiOS = false;
+    var isMac = false;
+
+    getUserAgent = function () {
+      u = navigator.userAgent;
+      isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
+      isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+      isMac = !!u.match(/macintosh|mac os x/i)
+    }
+
+    getUserAgent();
+
+
+    (function () {
+      for (var i in info) {
+        var infoDom = document.getElementById(i);
+        infoDom && infoDom.insertAdjacentHTML('afterbegin', info[i].join('\n'))
+      }
+    })()
+
+
+    if (location.search === '?v=last_yto') document.title = '顺秒圆通版'
+    var isWeixin = function () { //判断是否是微信
+      var ua = navigator.userAgent.toLowerCase();
+      if (ua.match(/MicroMessenger/i) == "micromessenger") {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+
+
+    var guide = document.getElementById('guide')
+
+    function getP() {
+      var str = location.search.substring(1);
+      var arr = str.split('&');
+      var qObj = {}
+      for (var i in arr) {
+        var dArr = arr[i].split('=');
+        if (dArr[0]) qObj[dArr[0]] = dArr[1]
+      }
+      return qObj
+    }
+
+    Array.prototype.fill = function (number, start = 0, end = this.length) {
+      if (start < 0) {
+        start = this.length + start
+      }
+      if (end < 0) {
+        end = this.length + end
+      }
+      for (let i = start; i < end; i++) {
+        this[i] = number
+      }
+      return this
+    }
+
+    function produceStatus(domList, bool) {
+      var arr = []
+      for (var i = 0, len = domList.length; i < len; i++) {
+        arr[i] = !!bool;
+        var classList = domList[i].classList
+        for (var j = 0, dLen = classList.length; j < dLen; j++) {
+          if (classList[j] == "iphone-box") {
+            arr[i] = !bool;
+            break;
+          }
+        }
+      }
+      return arr;
+    }
+
+    function oneFullH(type) {
+      console.log(type)
+      var fW = document.documentElement.clientWidth;
+      var fH = document.documentElement.clientHeight;
+      document.getElementsByClassName('container')[0].style.height = type && fH > fW ? fH - fW * 0.32 + 'px' : 'auto';
+      document.getElementsByClassName('container')[0].style.boxSizing = type && fH > fW ? 'border-box' : 'inherit';
+    }
+
+    everyStatus = function () {
+      var everyC = document.getElementsByClassName('every-container');
+      var len = everyC.length;
+      var statusList = new Array(len).fill(true);
+
+      if (isMac || isiOS) {
+        statusList = produceStatus(everyC);
+        oneFullH(true)
+      } else {
+        statusList = produceStatus(everyC, true);
+        oneFullH(false)
+      }
+
+      console.log(statusList)
+
+      for (var i = 0; i < len; i++) {
+        everyC[i].style.display = !!statusList[i] ? 'block' : 'none'
+      }
+    }
+
+    everyStatus()
+
+    if (isWeixin() && !(isMac || isiOS)) guide.style.display = 'block';
+
+    function download(type) {
+      if (type == 'iphone') return window.location.href =
+        'https://apps.apple.com/cn/app/%E9%A1%BA%E7%A7%92/id1438006994';
+
+      window.location.href = type == 'android' ? 'http://oms.aixunmiao.com/website_package/last.apk' :
+        'http://oms.aixunmiao.com/website_package/last_' + type + '.apk'
+    }
+  </script>
+</body>
+
+</html>

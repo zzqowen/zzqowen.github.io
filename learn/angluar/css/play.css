@@ -1,0 +1,264 @@
+  body {
+      height: 100%;
+      width: 100%;
+      background: url(../image/bj.png) no-repeat center center;
+      background-size: cover;
+  }
+
+  body>div {
+      width: 100%;
+  }
+
+  .head_board {
+      height: 8%;
+      color: #fae5ad;
+  }
+
+  .rival_box {
+      height: 66%;
+      padding: 0 5vw;
+  }
+
+  .mine_box {
+      height: 26%;
+      color: #fae5ad;
+      position: relative;
+  }
+
+  .mine_box .avatar {
+      height: 0.42rem;
+      width: 0.42rem;
+      border-radius: 50%;
+      border: 0.03rem solid #076463;
+      box-sizing: border-box;
+  }
+
+  .mine_box .staru_box {
+      width: 100%;
+      height: 10vh;
+      position: absolute;
+      top: -12vh;
+  }
+
+  .info_box {
+      margin-left: 0.22rem;
+      margin-bottom: 0.05rem;
+      margin-right: 15vw;
+  }
+
+  .mine_box .displayName {
+      font-size: 0.13rem;
+      margin-left: 0.06rem;
+      margin-bottom: 0.06rem;
+  }
+
+  .button_box {
+      margin-left: 0.16rem;
+      margin-right: 6vw;
+  }
+
+  .button_box div {
+      width: 0.83rem;
+      height: 0.4rem;
+      background-size: cover;
+  }
+
+  .rival_box .last_cards_box {
+    padding-bottom: 10vh;
+  }
+
+  .rival_box .last_cards_box img {
+    height: 14vh;
+  }
+
+  .rival_box .vertical_player_box {
+      padding-top: 10vh;
+      width: 27vw;
+  }
+
+  .rival_box .horizontal_player_box {
+      padding-top: 2vh;
+      height: 30vh;
+  }
+
+  .rival_box .player .avatar_box {
+      height: 10.4vh;
+      width: 10.4vh;
+      background: url(../image/h_header.png) no-repeat center center;
+      background-size: cover;
+  }
+
+  .rival_box .move_left {
+      transform: translate(-5.2vh, 0);
+      -moz-transform: translate(-5.2vh, 0);
+      -webkit-transform: translate(-5.2vh, 0);
+  }
+
+  .rival_box .move_left2 {
+      transform: translate(-3.2vh, 0);
+      -moz-transform: translate(-3.2vh, 0);
+      -webkit-transform: translate(-3.2vh, 0);
+  }
+
+  .rival_box .move_right {
+      transform: translate(5.2vh, 0);
+      -moz-transform: translate(5.2vh, 0);
+      -webkit-transform: translate(5.2vh, 0);
+  }
+
+  .rival_box .move_right2 {
+      transform: translate(3.2vh, 0);
+      -moz-transform: translate(3.2vh, 0);
+      -webkit-transform: translate(3.2vh, 0);
+  }
+
+  .rival_box .player .avatar {
+      height: 9.2vh;
+      width: 9.2vh;
+      border-radius: 50%;
+  }
+
+  .rival_box .player .displayName {
+      color: #149e63;
+  }
+
+  .rival_box .player .score {
+      color: #ebb72b;
+  }
+
+  .rival_box .player {
+      height: 10.4vh;
+      width: 15vw;
+  }
+
+  .rival_box .left .bg {
+      background: url(../image/h_bj.png) no-repeat center center;
+      background-size: auto 100%;
+  }
+
+  .rival_box .left .avatar_box {
+      margin-right: 0.8vw;
+  }
+
+  .rival_box .right .bg {
+      background: url(../image/h_bj_right.png) no-repeat center center;
+      background-size: auto 100%;
+  }
+
+  .rival_box .right .avatar_box {
+      margin-left: 0.8vw;
+  }
+
+  .card_status img {
+      width: auto;
+      height: 8vh;
+  }
+
+  .card_status .cards_num {
+      position: relative;
+  }
+
+  .card_status .cards_num {
+      height: 8vh;
+      width: 5.83vh;
+      font-size: 5vh;
+      color: #ffffff;
+      -webkit-text-stroke: 0.5px black;
+      background: url(../image/card_pictuer/a_bj.png) no-repeat center center;
+      background-size: 100% auto;
+  }
+
+  .mine_box .card {
+      width: 0.62rem;
+      height: 0.85rem;
+  }
+
+  .mine_box .choose {
+      -webkit-animation: up 0.2s ease forwards;
+      -moz-animation: up 0.2s ease forwards;
+      animation: up 0.2s ease forwards;
+  }
+
+  .mine_box .remind_icon {
+    height: 4vh;
+    width: 4vh;
+  }
+
+  .mine_box .mine_score {
+    width: 10vw;
+    font-size: 0.14rem;
+  }
+
+  @-webkit-keyframes up {
+      0% {
+          -webkit-transform: translate(0, 0);
+      }
+      100% {
+          -webkit-transform: translate(0, -4vh);
+      }
+  }
+
+  @-moz-keyframes up {
+      0% {
+          -moz-transform: translate(0, 0);
+      }
+      100% {
+          -moz-transform: translate(0, -4vh);
+      }
+  }
+
+  @keyframes up {
+      0% {
+          transform: translate(0, 0);
+      }
+      100% {
+          transform: translate(0, -4vh);
+      }
+  }
+
+  .top_font_size {
+      font-size: 0.14rem;
+  }
+
+  .card_margin_left {
+      margin-left: -0.24rem;
+  }
+
+  .card_box .card {
+      position: relative;
+  }
+
+  .not_card {
+      background: url('../image/p_no.png') no-repeat center center;
+  }
+
+  .not_card_later {
+      background-image: url('../image/p_no_later.png');
+  }
+
+  .ready_card {
+      margin-top: 0.08rem;
+      background: url('../image/p_yes.png') no-repeat center center;
+  }
+
+  .ready_card_later {
+      background-image: url("../image/p_yes_later.png")
+  }
+
+  .timedown_clock {
+    height: 13.78vh;
+    width: 12.22vh;
+    padding-top: 2.5vh;
+    color: #f8c928;
+    font-size: 5vh;
+    text-align: center;
+    background: url('../image/t_time.png') no-repeat center center;
+    background-size: cover;
+  }
+
+  .card:after{
+      content: "";
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+  }

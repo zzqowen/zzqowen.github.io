@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <input type="text" id="ipt">
+  <div id="ttt">asfasfsa</div>
+  <script>
+  document.getElementById('ttt').onclick = function() {
+    localStorage.clear();
+    localStorage.setItem('foo', 'baafsar');
+  }
+
+   window.addEventListener("storage", function (e) {
+      alert(e.newValue);
+    });
+  </script>
+</body>
+</html>

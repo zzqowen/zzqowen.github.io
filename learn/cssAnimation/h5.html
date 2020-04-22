@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .box {
+      width: 300px;
+      height: 300px;
+      margin: -50px auto 0;
+      text-align: center;
+      position: relative;
+      filter: url("#zzq")
+    }
+    .my {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background-color: #E16132;
+      line-height: 100px;
+      text-align: center;
+      color: white;
+      cursor: pointer;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      margin: auto;
+      z-index: 1;
+    }
+
+    .ball {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      box-sizing: border-box;
+      padding-top: 20px;
+      line-height: 1.25;
+      background-color: #E16132;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+      transition: background-color .2s, transform .5s, color .2s;
+      border-radius: 50%;
+      color: transparent;
+      transform: translate3d(0, 0, 0);
+    }
+
+    .my:hover {
+      animation: water 1s;
+    }
+
+    .my:hover ~ .ball {
+      color: white;
+    }
+
+    .my:hover ~ .ball1 {
+      transform: translate3d(-130%, -75%, 0);
+    }
+
+    .my:hover ~ .ball2 {
+      transform: translate3d(130%, -75%, 0);
+    }
+
+    .my:hover ~ .ball3 {
+      transform: translate3d(0, 150%, 0);
+    }
+
+    @keyframes water {
+      from, 11.1%, to {
+        transform: none;
+      }
+      22.2% {
+          transform: skewX(-12.5deg) skewY(-12.5deg);
+      }
+      33.3% {
+          transform: skewX(6.25deg) skewY(6.25deg);
+      }
+      44.4% {
+          transform: skewX(-3.125deg) skewY(-3.125deg);
+      }
+      55.5% {
+          transform: skewX(1.5625deg) skewY(1.5625deg);
+      }
+      66.6% {
+          transform: skewX(-0.78125deg) skewY(-0.78125deg);
+      }
+      77.7% {
+          transform: skewX(0.390625deg) skewY(0.390625deg);
+      }
+      88.8% {
+          transform: skewX(-0.1953125deg) skewY(-0.1953125deg);
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div class="my">我的</div>
+    <div class="ball ball1">开心</div>
+    <div class="ball ball2">高兴</div>
+    <div class="ball ball3">有趣</div>
+  </div>
+
+  <svg class="svg-filters" width="0" height="0">
+    <defs>
+      <filter id="zzq">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+        <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="zzq" />
+        <feComposite in="SourceGraphic" in2="zzq" operator="atop"/>
+      </filter>
+    </defs>
+  </svg>
+</body>
+</html>

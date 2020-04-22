@@ -1,0 +1,189 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="description" content="CSS在线压缩工具，精简CSS文件大小，提高web前端性能" />
+    <meta name="description" content="CSS在线压缩工具，精简CSS文件大小，提高web前端性能" />
+    <meta name="keywords" content="web前端,css,CSS压缩,工具" />
+    <meta name="author" content="张鑫旭,zhangxixnu" />
+    <title>CSS在线压缩工具 &gt;&gt; 张鑫旭-鑫空间-鑫生活</title>
+    <link rel="stylesheet" href="./css/compress.css" type="text/css" />
+    <link rel="stylesheet" href="./lulu/theme/peak/css/common/ui/Button.css" type="text/css" />
+</head>
+
+<body>
+<div id="header">
+    <a href="/" class="logo" title="回到鑫空间-鑫生活首页">
+        <img src="/php/image/zxx_home_logo.png" border="0" />
+    </a>
+</div>
+<div id="main">
+    <h1>CSS在线压缩工具</h1>
+    <div id="body">
+        <div class="old_code">
+            <h3>原始代码</h3>
+            <div class="sm_tit">将CSS代码复制到下面的文本域中或者：<input type="file" id="upfile" accept="text/*" hidden><label for="upfile" class="ui-button ui-button-warning">选择CSS文件</label></div>
+            <textarea id="oldCode" class="textarea"></textarea>
+        </div>
+        <div class="compress_process">
+            <h3>处理过程</h3>
+            <div class="g9 prc_x">
+                <div class="mb10">
+                    <button id="startBtn" class="ui-button ui-button-primary disabled">开始处理</button>
+                    <a href="http://www.zhangxinxu.com/php/advise.php">bug提交</a>
+                </div>
+                <div id="first">1. 去除注释</div>
+                <div id="second">2. 去除样式首尾空格</div>
+                <div id="third">3. 去除样式之间空格</div>
+                <div id="forth">4. 去除样式类型后面空格</div>
+                <div id="fifth">5. 去除换行符</div>
+                <div id="sixth">6. 去除末尾分号</div>
+                <div id="seventh">7. IE6 first-letter留空</div>
+            </div>
+            <div id="saveSize" class="prc_x"></div>
+        </div>
+        <div class="now_code">
+            <h3>处理结果</h3>
+            <div class="sm_tit">处理后的CSS代码如下：<a id="downBtn" href="javascript:" class="ui-button ui-button-success disabled" download="未命名.css">下载</a></div>
+            <textarea id="showCode" class="textarea"></textarea>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var $ = function(id){
+        return document.getElementById(id);
+    };
+    $("startBtn").onclick = function(){
+        var v_old = $("oldCode").value,v_new;
+        var l = v_old.length;
+        if(l === 0){
+            alert("尚未添加CSS代码");
+            return false;
+        }
+        //this.disabled = "disabled";
+        //开始执行压缩
+        //去除注释
+        v_new = v_old.replace(/\/\*((.|\n|\t)*?)\*\//g,"");
+        fnProcess("first");
+        //除去首尾空格
+        v_new = v_new.replace(/(\s)*{\s*/g,"{").replace(/(\s)*}\s*/g,"}");
+        fnProcess("second");
+        //去除样式间空格
+        v_new  = v_new.replace(/(\s)*;\s*/g,";");
+        fnProcess("third");
+        //去除样式名称后面空格
+        v_new  = v_new.replace(/:(\s)*/g,":");
+        fnProcess("forth");
+        //去除换行符
+        v_new  = v_new.replace(/(\n|\t)+/g,"");
+        fnProcess("fifth");
+        //去除末尾分号
+        v_new  = v_new.replace(/;}/g,"}");
+        fnProcess("sixth");
+        //IE6下css-letter留空的问题
+        if(/first\-letter{/g.test(v_new)){
+            v_new  = v_new.replace(/first\-letter{/g,"first-letter {");
+            fnProcess("seventh");
+        }else{
+            $("seventh").style.color = "#999";
+            if($("seventh").getElementsByTagName("strong").length > 0){
+                $("seventh").removeChild($("seventh").getElementsByTagName("strong")[0]);
+            }
+        }
+        var nl = v_new.length;
+        var savel = l - nl;
+        $("saveSize").innerHTML = '原CSS文件大小大约'+fnKbyte(l)+'K<br />现大小大约'+fnKbyte(nl)+'K<br />节约大小约<span style="color:red;">'+fnKbyte(savel)+'K</span>';
+        $("showCode").value = v_new;
+    };
+    var fnProcess = function(id){
+        if($(id).getElementsByTagName("strong").length === 0){
+            $(id).style.color = "#333";
+            var spanNode = document.createElement("strong");
+            spanNode.style.color = "green";
+            spanNode.innerHTML = "√";
+            $(id).appendChild(spanNode);
+        }
+    };
+    var fnKbyte = function(l){
+        var k = l / 1024;
+        return Math.round(k * 1000) / 1000;
+    };
+
+    //一些初始化
+    $("oldCode").focus();
+    $("showCode").value = "";
+    // 上面是快10年前的老代码了，忽略之
+
+
+    var eleInput = document.getElementById('oldCode');
+    var eleOutput = document.getElementById('showCode');
+    var eleStartBtn = document.getElementById('startBtn');
+    var eleDownBtn = document.getElementById('downBtn');
+    // 上传输入框
+    var eleFile = document.getElementById('upfile');
+    var reader = new FileReader();
+    reader.onload = function (event) {
+        eleInput.value = event.target.result;
+        eleInput.oninput();
+        eleStartBtn.classList.remove('disabled');
+        eleStartBtn.click();
+        eleOutput.oninput();
+        // 改变下载地址
+        var blob = new Blob([eleOutput.value]);
+        eleDownBtn.href = URL.createObjectURL(blob);
+    };
+    // 选择文件
+    eleFile.onchange = function (event) {
+        var file = event.target.files[0];
+        if (file) {
+            eleDownBtn.setAttribute('download', file.name.replace(/\.css$/, '-min.css'));
+            reader.readAsText(file);
+        }
+    };
+    // 按钮禁用UI控制
+    eleInput.oninput = function () {
+        if (this.value.trim()) {
+            eleStartBtn.classList.remove('disabled');
+        } else {
+            eleStartBtn.classList.remove('disabled');
+        }
+    };
+    eleOutput.oninput = function () {
+        if (this.value.trim()) {
+            eleDownBtn.classList.remove('disabled');
+        } else {
+            eleDownBtn.classList.remove('disabled');
+        }
+    };
+</script>
+<div id="footer">
+    Designed &amp; Powerd by <a href="/">zhangxinxu</a><br />
+    Copyright© 张鑫旭-鑫空间-鑫生活<br>
+    <a href="http://www.miibeian.gov.cn/" target="_blank">鄂ICP备09015569号</a>
+</div>
+<script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-11205167-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+        var ga = document.createElement('script');
+        ga.type = 'text/javascript';
+        ga.async = true;
+        ga.src = 'http://www.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+</script>
+<div id="ad">
+    <script type="text/javascript">	google_ad_client = "pub-0090627341039040";google_ad_slot = "2041257798";google_ad_width = 468;google_ad_height = 60;</script><script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
+</div>
+<p align="center"><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 728x90, 大型横幅广告 -->
+    <ins class="adsbygoogle"
+         style="display:inline-block;width:728px;height:90px"
+         data-ad-client="ca-pub-0090627341039040"
+         data-ad-slot="4686885989"></ins>
+</p>
+</body>
+</html>

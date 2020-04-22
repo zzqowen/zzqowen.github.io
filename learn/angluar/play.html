@@ -1,0 +1,627 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="./css/init.css" />
+    <link rel="stylesheet" type="text/css" href="./css/play.css" />
+    <script src="./js/fastclick.js"></script>
+    <script type="text/javascript" src="./js/angular.min.js"></script>
+    <script type="text/javascript" src="./js/hammer.min.js"></script>
+    <script type="text/javascript" src="js/adapter.js"></script>
+
+</head>
+
+<body ng-app="zhuayazi" ng-controller="mainCtr" ng-cloak>
+    <div class="head_board flex-container">
+        <div class="flex-container" style="align-items: flex-end;">
+            <div class="top_font_size" style='margin-left: 0.1rem;'>房号</div><span style="margin-left: 0.045rem;">{{roomInFo.roomId}}</span></div>
+        <div class="flex-container" style="align-items: flex-end;">
+            <div class="top_font_size" style="margin-left: 0.25rem;">局数</div><span style="margin-left: 0.045rem;">{{roundInFo.currentRoundNum}}/{{roomInFo.roundNum}}</span></div>
+        <div class="flex-container" style="align-items: flex-end;">
+            <div class="top_font_size" style="margin-left: 1.42rem;">倍数</div><span style="margin-left: 0.045rem;">{{roundInFo.currentMultiple}}</span></div>
+        <div class="flex-container" ng-if="roomInFo.limitMultiple != '0'" style="align-items: flex-end;">
+            <div class="top_font_size" style="margin-left: 0.25rem">封顶：</div><span style="margin-left: 0.045rem;">{{roomInFo.limitMultiple}}</span></div>
+        <div class="flex-container" ng-if="roomInFo.limitMultiple == '0'" style="align-items: flex-end;">
+            <div class="top_font_size" style="margin-left: 3.75vh">不封顶</div>
+        </div>
+        <div class="flex-container" style="flex: 1;justify-content: flex-end;align-items: flex-end;margin-right: 0.1rem;">
+            <div class="top_font_size">设置</div>
+        </div>
+    </div>
+    <div class="rival_box flex-space-container flex-stretch">
+        <div class="vertical_player_box flex-column-around-container">
+            <div class="left flex-container" ng-repeat="item in roomInFo.chair.left.players track by $index">
+                <div class="bg">
+                    <div class="player flex-container move_left">
+                        <div class="avatar_box flex-column-center-container">
+                            <div class="avatar" style="background: url({{item.avatar}}) no-repeat center center;background-size: cover"></div>
+                        </div>
+                        <div class="flex-column-container">
+                            <div class="displayName">{{item.categoryName}}</div>
+                            <div class="score">积分：{{item.score||'0'}}</div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="card_status move_left2">
+                    <div class="cards_num flex-row-center-container" ng-if="status == 'start'">
+                        <div>{{item.cards.length||'0'}}</div>
+                    </div>
+                    <img ng-if="status == 'roll'" ng-src="{{mine.roll.url}}" alt="">
+                </div>
+                <div class="timedown_clock flex-row-center-container" ng-if="roundInFo.currentPlayer==item.playerId">
+                    <span>{{roundInFo.timeDown}}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex-column-container flex-grow">
+            <div class="horizontal_player_box flex-column-nojust-container flex-stretch">
+                <div class="left flex-column-center-container" ng-repeat="item in roomInFo.chair.top.players track by $index">
+                    <div class="flex-container">
+                        <div class="bg">
+                            <div class="player flex-container move_left">
+                                <div class="avatar_box flex-column-center-container">
+                                    <div class="avatar" style="background: url({{item.avatar}}) no-repeat center center;background-size: cover"></div>
+                                </div>
+                                <div class="flex-column-container">
+                                    <div class="displayName">{{item.categoryName}}</div>
+                                    <div class="score">积分：{{item.score||'0'}}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card_status move_left2">
+                            <div class="cards_num flex-row-center-container" ng-if="status == 'start'">
+                                <div>{{item.cards.length||'0'}}</div>
+                            </div>
+                            <img ng-if="status == 'roll'" ng-src="{{item.roll.url}}" alt="">
+                        </div>
+                    </div>
+                    <div class="timedown_clock flex-row-center-container" ng-if="roundInFo.currentPlayer==item.playerId">
+                        <span>{{roundInFo.timeDown}}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="last_cards_box flex-row-center-container flex-grow">
+                <img class="card" ng-src="{{item.url}}" alt="" ng-repeat="item in nowShow track by $index">
+            </div>
+        </div>
+
+        <div class="vertical_player_box flex-column-around-container">
+            <div class="right flex-right-container" ng-repeat="item in roomInFo.chair.right.players track by $index">
+                <div class="timedown_clock flex-row-center-container" ng-if="roundInFo.currentPlayer==item.playerId">
+                    <span>{{roundInFo.timeDown}}</span>
+                </div>
+                <div class="card_status move_right2">
+                    <div class="cards_num flex-row-center-container" ng-if="status == 'start'">
+                        <div>{{item.cards.length||'0'}}</div>
+                    </div>
+                    <img ng-if="status == 'roll'" ng-src="{{item.roll.url}}" alt="">
+                </div>
+                <div class="bg">
+                    <div class="player flex-right-container move_right">
+                        <div class="flex-column-container">
+                            <div class="displayName">{{item.categoryName}}</div>
+                            <div class="score">积分：{{item.score||'0'}}</div>
+                        </div>
+                        <div class="avatar_box flex-column-center-container">
+                            <div class="avatar" style="background: url({{item.avatar}}) no-repeat center center;background-size: cover"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mine_box flex-column-container">
+
+        <div class="staru_box flex-row-center-container">
+            <div class="card_status" ng-if="status == 'roll'">
+                <img ng-src="{{mine.roll.url}}" alt="">
+            </div>
+
+            <div class="timedown_clock flex-row-center-container" ng-if="roundInFo.currentPlayer==userInFo.id">
+                <span>{{roundInFo.timeDown}}</span>
+            </div>
+        </div>
+        <div class="flex-space-container flex-grow  flex-stretch">
+            <div class="info_box flex-space-container-end">
+                <div class="avatar" style="background: url({{userInFo.photo}}) no-repeat center center; background-size: cover"></div>
+                <div class="displayName">{{userInFo.nikeName}}</div>
+            </div>
+            <div class="card_box flex-grow flex-row-center-container" id="card_box">
+                <div class="card" ng-style="{'background': 'url({{item.url}}) no-repeat center center'}" ng-src="{{item.url}}" alt="" ng-repeat="item in mine.cards track by $index" ng-click="choose(item)" ng-class="{'choose':item.choose, 'card_margin_left': ($index != 0)}">
+
+                </div>
+                <!--<img class="card" ng-src="{{item.url}}" alt="" ng-repeat="item in mine.cards track by $index" ng-click="choose(item)" ng-class="{'choose':item.choose, 'card_margin_left': ($index != 0)}">-->
+            </div>
+            <div class="button_box flex-column-center-container" ng-if="mine.cards">
+                <div class="not_card" tapmode="not_card_later"></div>
+                <div ng-click="roundInFo.currentPlayer==userInFo.id&&showCard()" class="ready_card" tapmode="ready_card_later"></div>
+            </div>
+            <div class="flex-column-between-container">
+                <div class="remind_icon"></div>
+                <div class="mine_score">积分：{{mine.score||"0"}}</div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+    <script type="text/javascript">
+        var myApp = angular.module('zhuayazi', []);
+        myApp.controller('mainCtr', function($scope, $http, $timeout, $interval) {
+            // FastClick.attach(document.body); //在配置中加上这句话
+
+            $scope.roomInFo = {};
+            $scope.userInFo = {};
+            $scope.roundInFo = {};
+            $scope.mine = {'cards': [{
+                "num": 1,
+                "val": 3,
+                "type": 1,
+                "url": "./image/card_pictuer/a_9.png"
+            }, {
+                "num": 2,
+                "val": 3,
+                "type": 2,
+                "url": "./image/card_pictuer/a_11.png"
+            }, {
+                "num": 3,
+                "val": 3,
+                "type": 3,
+                "url": "./image/card_pictuer/a_10.png"
+            }, {
+                "num": 4,
+                "val": 3,
+                "type": 4,
+                "url": "./image/card_pictuer/a_12.png"
+            }, {
+                "num": 5,
+                "val": 4,
+                "type": 1,
+                "url": "./image/card_pictuer/a_13.png"
+            },  {
+                "num": 10,
+                "val": 5,
+                "type": 2,
+                "url": "./image/card_pictuer/a_19.png"
+            }]};
+
+            document.getElementById("card_box").classList
+
+            var hammertime = new Hammer(document.getElementById("card_box"));
+             //为该dom元素指定触屏移动事件
+            hammertime.on("panstart", function (ev) {
+                 //控制台输出
+                 console.log('开始');
+
+            });
+
+            hammertime.on("panmove", function (ev) {
+                //控制台输出
+                console.log('移动');
+            });
+
+            hammertime.on("panend", function (ev) {
+                //控制台输出
+                console.log('结束');
+            });
+
+            hammertime.on("tap", function (ev) {
+                //控制台输出
+                console.log('点击tap');
+            });
+
+            hammertime.on("press", function (ev) {
+                //控制台输出
+                console.log('点击press');
+            });
+
+
+            $scope.userInFo = JSON.parse(localStorage.getItem('userInfo'));
+            $scope.roomInFo.roomId = localStorage.getItem('roomId');
+            console.log(JSON.stringify($scope.userInFo));
+            console.log($scope.roomInFo.roomId)
+
+            var host = "ws://192.168.1.108:8080/websocket";
+            var socket = new WebSocket(host);
+            socket.onopen = function(evt) {
+                console.log("连接成功");
+            };
+
+            socket.onclose = function(evt) {
+                console.log("socket关闭");
+            };
+
+            socket.onmessage = function(evt) {
+                //收到服务器消息，使用evt.data提取
+                var message = JSON.parse(evt.data);
+                console.log(evt.data);
+                switch (message.action) {
+                    case "0999":
+                        console.log("do0999");
+                        socketSuccess(message);
+                        break;
+                    case "0001":
+                        $timeout(function() {
+                            console.log("do0001");
+                            setRoom(message);
+                        });
+                        break;
+                    case "0002":
+                        $timeout(function() {
+                            $scope.roomInFo.players = message.players;
+                            sitDown();
+                            setMine();
+                        });
+                        break;
+                    case "0003":
+                        $timeout(function() {
+                            roll(message);
+                        });
+                        break;
+                }
+            };
+
+            socket.onerror = function(evt) {
+                console.log('网络异常');
+                //产生异常
+            };
+            apiready = function() {
+                api.addEventListener({
+                    name: 'keyback'
+                }, function(ret, err) {
+                    api.confirm({
+                        title: '提示',
+                        msg: '是否解散房间',
+                        buttons: ['确定', '取消']
+                    }, function(ret, err) {
+                        var index = ret.buttonIndex;
+                        if (index == 1) {
+                            socket.send(JSON.stringify({
+                                "action": "1998",
+                                "roomId": $scope.roomInFo.roomId,
+                                "userId": $scope.userInFo.id
+                            }));
+                            api.closeWin();
+                        }
+                    });
+                });
+            };
+
+             $scope.userInFo = {
+                 'photo': 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1513686480648&di=35ad43d0ced4a3c5448bfad4b7f7244c&imgtype=0&src=http%3A%2F%2Flove.heima.com%2Fupload%2Fallimg%2F170816%2F59715-1FQ6153339-50.jpg',
+                 'nikeName': 'DK大神',
+                 'id': '1234567'
+             };
+
+            function socketSuccess(message) {
+                console.log('连接成功')
+                $scope.userInFo.sessionId = message.sessionId;
+                socket.send(JSON.stringify({
+                    "action": "1001",
+                    "sessionId": $scope.userInFo.sessionId,
+                    "roomId": $scope.roomInFo.roomId,
+                    "userId": $scope.userInFo.id
+                }));
+                getCardDictionaries();
+            }
+
+
+            function getCardDictionaries() {
+                $http.get('./json/card.json').success(function(data) {
+                    $scope.cardDictionaries = data;
+                    main();
+                });
+            }
+            // getCardDictionaries();
+
+            var message0001 = {
+                "action": "0001",
+                "roomId": "12345", //房间号5位数
+                "moshi": "1", //0:赖子模式；1:经典模式
+                "playerNum": "4", //房间人数2，3，4，5，6，7
+                "roundNum": "8", //对局数8,16,24
+                "limitMultiple": "0" //封顶倍数，0:不封顶；n:n倍封顶
+            };
+
+            var message0002 = {
+                "action": "0002",
+                "roomId": "12345", //房间号
+                "players": [{
+                        "playerId": "1234567", //每个玩家ID
+                        "categoryName": "DK大神", //玩家昵称
+                        "avatar": "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1513686480648&di=35ad43d0ced4a3c5448bfad4b7f7244c&imgtype=0&src=http%3A%2F%2Flove.heima.com%2Fupload%2Fallimg%2F170816%2F59715-1FQ6153339-50.jpg", //玩家头像
+                    }, {
+                        "playerId": "2345678",
+                        "categoryName": "紫青",
+                        "avatar": "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=714624164,1707887834&fm=27&gp=0.jpg",
+                    }, {
+                        "playerId": "3456789",
+                        "categoryName": "二哥",
+                        "avatar": "http://c.hiphotos.baidu.com/image/pic/item/d009b3de9c82d1583e4cc17b890a19d8bd3e422a.jpg",
+                    }, {
+                        "playerId": "0000001",
+                        "categoryName": "大哥",
+                        "avatar": "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1513743651131&di=8db129916c5ea24b9bafba8763d7744c&imgtype=0&src=http%3A%2F%2Fa.hiphotos.baidu.com%2Fzhidao%2Fwh%253D450%252C600%2Fsign%3D923fa8bb66d0f703e6e79dd83dca7d0b%2F7a899e510fb30f245a8b12afcc95d143ad4b030c.jpg",
+                    }
+                    // , {
+                    //     "playerId": "3456789",
+                    //     "categoryName": "二哥",
+                    //     "avatar": "http://c.hiphotos.baidu.com/image/pic/item/d009b3de9c82d1583e4cc17b890a19d8bd3e422a.jpg",
+                    // }, {
+                    //     "playerId": "2345678",
+                    //     "categoryName": "紫青",
+                    //     "avatar": "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=714624164,1707887834&fm=27&gp=0.jpg",
+                    // }, {
+                    //     "playerId": "0000001",
+                    //     "categoryName": "大哥",
+                    //     "avatar": "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1513743651131&di=8db129916c5ea24b9bafba8763d7744c&imgtype=0&src=http%3A%2F%2Fa.hiphotos.baidu.com%2Fzhidao%2Fwh%253D450%252C600%2Fsign%3D923fa8bb66d0f703e6e79dd83dca7d0b%2F7a899e510fb30f245a8b12afcc95d143ad4b030c.jpg",
+                    // }
+                ]
+            }
+
+            var message0003 = {
+                "action": "0003",
+                "roomId": 12345, //房间号
+                "waitCardsNum": 36, //牌堆所剩牌数
+                "currentRound": 1, //当前局数
+                "playersCards": [{
+                    "playerId": "1234567", //每个玩家Id
+                    "rool": 2,
+                    "cards": [34, 35, 36, 37, 38] //玩家手牌
+                }, {
+                    "playerId": "2345678", //每个玩家Id
+                    "rool": 3,
+                    "cards": [7, 8, 9, 10, 11] //玩家手牌
+                }, {
+                    "playerId": "3456789", //每个玩家Id
+                    "rool": 5,
+                    "cards": [1, 2, 3, 4, 5, 39] //玩家手牌
+                }, {
+                    "playerId": "0000001", //每个玩家Id
+                    "rool": 34,
+                    "cards": [22, 23, 24, 25, 26] //玩家手牌
+                }]
+            }
+
+            function getSocket(message) {
+                console.log(message);
+                switch (message.action) {
+                    case "0001":
+                        setRoom(message);
+                        break;
+                    case "0002":
+                        $scope.roomInFo.players = message.players;
+                        sitDown();
+                        setMine();
+                        break;
+                    case "0003":
+                        roll(message);
+                        break;
+                    default:
+
+                }
+            }
+
+            function setMine() {
+                $scope.mine = getPlayer($scope.userInFo.id);
+            }
+
+            function roundInit() {
+                $scope.roundInFo.currentMultiple = 1;
+                $scope.roundInFo.winnerID = null;
+            }
+
+            function getPlayerIndex(playerId) {
+                var players = $scope.roomInFo.players;
+                for (var i = 0; i < players.length; i++) {
+                    if (players[i].playerId == playerId) return i;
+                }
+            }
+
+            function getPlayer(playerId) {
+                var players = $scope.roomInFo.players;
+                for (var i = 0; i < players.length; i++) {
+                    if (players[i].playerId == playerId) return players[i];
+                }
+            }
+
+            function setRoom(message) {
+                $scope.roomInFo = message;
+                console.log(JSON.stringify($scope.roomInFo));
+            }
+
+            function setChair() {
+                var sit = {
+                    left: {
+                        max: 0,
+                        players: []
+                    },
+                    top: {
+                        max: 0,
+                        players: []
+                    },
+                    right: {
+                        max: 0,
+                        players: []
+                    }
+                }
+                switch ($scope.roomInFo.playerNum) {
+                    case "2":
+                        console.log('hehe');
+                        sit.top.max = 1;
+                        break;
+                    case "3":
+                        sit.left.max = 1;
+                        sit.right.max = 1;
+                        break;
+                    case "4":
+                        sit.left.max = 1;
+                        sit.top.max = 1;
+                        sit.right.max = 1;
+                        break;
+                    case "5":
+                        sit.left.max = 2;
+                        sit.right.max = 2;
+                        break;
+                    case "6":
+                        sit.left.max = 2;
+                        sit.top.max = 1;
+                        sit.right.max = 2;
+                        break;
+                    case "7":
+                        sit.left.max = 3;
+                        sit.right.max = 3;
+                        break;
+                    default:
+                }
+                return sit;
+            }
+
+            function sitDown(playerId) {
+                $scope.roomInFo.chair = setChair();
+                var players = $scope.roomInFo.players;
+                var chair = $scope.roomInFo.chair;
+                var index = getPlayerIndex($scope.userInFo.id);
+                for (var i = 0; i < players.length - 1; i++) {
+                    index = (index + 1) % players.length;
+                    console.log(index);
+                    console.log(JSON.stringify(chair));
+                    if (chair.right.players.length < chair.right.max) {
+                        chair.right.players.unshift(players[index]);
+                    } else if (chair.top.players.length < chair.top.max) {
+                        chair.top.players.push(players[index]);
+                    } else if (chair.left.players.length < chair.left.max) {
+                        chair.left.players.push(players[index]);
+                    }
+                }
+                console.log(JSON.stringify($scope.roomInFo.chair));
+            }
+
+            function roll(message) {
+                var startCard = message.playersCards;
+                $scope.roundInFo.currentRoundNum = message.currentRound;
+                $scope.status = "roll";
+                for (var i = 0; i < startCard.length; i++) {
+                    var playerId = startCard[i].playerId;
+                    var player = getPlayer(playerId);
+                    player.roll = getCard(startCard[i].rool);
+                }
+                $timeout(function() {
+                    Licensing(startCard);
+                }, 5000);
+            }
+
+            function Licensing(startCard) {
+                $scope.status = "start";
+                for (var i = 0; i < startCard.length; i++) {
+                    var playerId = startCard[i].playerId;
+                    var player = getPlayer(playerId);
+                    player.cards = getCard(startCard[i].cards);
+                    console.log(JSON.stringify(player.cards));
+                    if (player.cards.length == 6) {
+                        $scope.roundInFo.banker = playerId;
+                        $scope.roundInFo.currentPlayer = playerId;
+                        timeDown();
+                    }
+                }
+            }
+
+
+            var timer = $interval(function () {
+              $scope.roundInFo.timeDown--;
+            }, 1000, 20);
+
+            function timeDown(){
+              if(timer) $interval.cancel(timer);
+              $scope.roundInFo.timeDown = 20;
+            }
+
+
+            function main() {
+                // console.log($scope.cardDictionaries);
+                // getSocket(message0001);
+                roundInit();
+                $scope.roundInFo.currentRoundNum = 0;
+                // getSocket(message0002);
+                // getSocket(message0003);
+                // var ary = [3, 5, 6, 8, 9, 54];
+                // $scope.myCard = getCard(ary);
+            }
+
+            function getCard(cards) {
+                if (cards instanceof Array) {
+                    var take = [];
+                    for (var i = 0; i < $scope.cardDictionaries.length; i++) {
+                        var now = $scope.cardDictionaries[i];
+                        if (cards.indexOf(now.num) + 1) {
+                            take.push(now);
+                        }
+                    }
+                } else if (typeof cards == "number") {
+                    var take;
+                    for (var i = 0; i < $scope.cardDictionaries.length; i++) {
+                        var now = $scope.cardDictionaries[i];
+                        if (cards == now.num) take = now;
+                    }
+                }
+                return take;
+            }
+
+            $scope.choose = function(item) {
+                if (item.choose) {
+                    item.choose = 0;
+                } else {
+                    item.choose = 1;
+                }
+            }
+
+            $scope.showCard = function() {
+                var chooseCards = [];
+                var lastCards = [];
+                var myCards = $scope.mine.cards;
+                for (var i = 0; i < myCards.length; i++) {
+                    if (myCards[i].choose) {
+                        chooseCards.push(myCards[i]);
+                    } else {
+                        lastCards.push(myCards[i]);
+                    }
+                }
+                $scope.nowShow = chooseCards;
+                $scope.mine.cards = lastCards;
+                $scope.roundInFo.currentPlayer = null;
+            }
+
+
+
+
+            function goGame() {
+                api.openWin({
+                    name: 'main',
+                    url: '../html/main.html',
+                    bounces: false,
+                    animation: {
+                        type: 'fade',
+                        duration: 200
+                    },
+                    rect: {
+                        x: 0,
+                        y: 0,
+                        w: 'auto',
+                        h: 'auto'
+                    }
+                });
+            }
+
+
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>使用jsencrypt执行OpenSSL的RSA加密，解密</title>
+    </head>
+    <!--引入jsencrypt.js-->
+    <script src="https://cdn.bootcss.com/jsencrypt/3.0.0-beta.1/jsencrypt.js"></script>
+    <script type="text/javascript">
+        //公钥
+        var PUBLIC_KEY = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAy8BAqbCFmzzXlV8BGalGS0MJ+cQh29u9qEJylaZewntGvkggLdKmMN2sigavhlNO3jBpG8XOHuO1hfAU0RD/LvrkOTEbDRVeboawnLo9vOlaxYhZT6non9Ofp1y/kEfGlOvxm3HR1zeaX8oRuqqj8Esb4Mu9U4feMVWvFOYZP53aCynC6XoLhXJKg7yCrxR3ZY9lYt4KEpO33xVayrgM7/4PTADscq3MumNQUt+s0v/+9y8S9tOIc/OriAQD+S1B64uTTNuVTObqK44z/zZ7f/7boMVl290A4LehChA4BKcw5JIVhNjURExPNrLDGbF0HURn+JIMaABuFsLaeU4vFwIDAQAB';
+        //私钥
+        var PRIVATE_KEY = 'MIIEpAIBAAKCAQEAy8BAqbCFmzzXlV8BGalGS0MJ+cQh29u9qEJylaZewntGvkggLdKmMN2sigavhlNO3jBpG8XOHuO1hfAU0RD/LvrkOTEbDRVeboawnLo9vOlaxYhZT6non9Ofp1y/kEfGlOvxm3HR1zeaX8oRuqqj8Esb4Mu9U4feMVWvFOYZP53aCynC6XoLhXJKg7yCrxR3ZY9lYt4KEpO33xVayrgM7/4PTADscq3MumNQUt+s0v/+9y8S9tOIc/OriAQD+S1B64uTTNuVTObqK44z/zZ7f/7boMVl290A4LehChA4BKcw5JIVhNjURExPNrLDGbF0HURn+JIMaABuFsLaeU4vFwIDAQABAoIBAQCmM33LrX1ewwOMCcIo/4aij93MSmvgHuAXJ5S2c86qT8rGHql5F3KPO9Oph4iYRs53uf+TMwhO9Co3Rj6Ex5uQ5AFUkbTiOEMeX2ojflwsBCISLYXE0PE7pnF+IM72T0YyZkBgLzkfmHCpoHhTzywJMAtelHMsdxENJzq5DnUcCR9xdqCEII/FybTHeqKk9Zwbj+lLAumRuDVduY/a2MdlS03M6pXwCybUtEyYVBUpooJJcMJY2WKm8fRMlhlNVKUH4AfwvxTUq0KHXxDLAiO/LWvcczQY5K91XVpCgVcxSDNPsHHNqMbiatKiWX45+1BKV+LJ+guCIgov46ozYYexAoGBAOvAneLd95w8eCMvz08RVzpzkqRAmELwPtXvc35qx6yBPsjoE/gdvnuhHEoHnbEeNAhARhE8heEBeGeVTtocAZ9wTeBPi7SBewx2odU0RUN7LTYpw7l8dVQom0HoStQ7HFr/mhGKK16heBSfpMrB9jjPeb2Jw7iQtfam3LetQTv5AoGBAN1ACOnYBpDBq3BTflyEvuUHRK6AWI5ycW19ObLdPMx0xJ0qZZtZgLoNwVJ6vUpS7moEd8/kuRsPQaMHvhrHBdwMgt+BqF20ZsxzMMf2UZt27uj2YtarwxljqG3TCqtrMDh4fb4tqkDVsP5FQz8gkoV/Qh1n4dz3DAoQKx8qwOePAoGBAI6YOud2CsbdbG0cBfB1NKWOMixXRcF3Pwp3gwv72jplEmzCsxFoLEbq9AlzAdaXxjEXb0oNqYynLwS4MrGKLxEZBIGgm4faqWqodspWi259mqMgL9qJhQ4aYY5Dyr8D4erIn4/sWr8qO09+IFbjauKB28jhAxknrmg6FVaj3MlBAoGAX+ypcKlmf1BYggTRHk+3bBjwoC+pNWlM4EmQwInHGGXv8Kw3DVmKxB++l4H7m8PE9lYllA74alD9BjAPLhDn63XJMBpI4weaIj43Ahs7WooAHyTjyWsC1Xktxx/e2l9IstMawV+PFzkO2c8xzqbSn+qCwbkOZfz+TUahS4v/wuUCgYBoy3d+1R7CTQVk9M/nuT7Kqj2gTCwD61FvWJSl29H8Jln7jdWizPd9DSoIzU2Q6l9mLhMvv1WWseUn0f8eGUhgBGgPqHXGH6RjbwfBJtpHK9jtdnznrqq/IaVeJOI8ENqUD5PJoEzD/ydCiCI6Kd3PXHXhtMH9EyEeTvHUD5ReZw==';
+        //使用公钥加密
+        var encrypt = new JSEncrypt();
+		  //encrypt.setPrivateKey('-----BEGIN RSA PRIVATE KEY-----'+PRIVATE_KEY+'-----END RSA PRIVATE KEY-----');
+        encrypt.setPublicKey('-----BEGIN PUBLIC KEY-----' + PUBLIC_KEY + '-----END PUBLIC KEY-----');
+        var encrypted = encrypt.encrypt('就按理说会计法拉克积分撒拉康师傅');
+        console.log('加密后数据:%o', encrypted);
+        //使用私钥解密
+        var decrypt = new JSEncrypt();
+		//decrypt.setPublicKey('-----BEGIN PUBLIC KEY-----' + PUBLIC_KEY + '-----END PUBLIC KEY-----');
+        decrypt.setPrivateKey('-----BEGIN RSA PRIVATE KEY-----'+PRIVATE_KEY+'-----END RSA PRIVATE KEY-----');
+        var uncrypted = decrypt.decrypt(encrypted);
+        console.log('解密后数据:%o', uncrypted);
+
+
+
+        Vue.prototype.encrypted = (data, publicKey) => {
+          var encrypt = new JSEncrypt();
+          const pubkey = `
+          -----BEGIN PUBLIC KEY-----
+          ${publicKey ? publicKey : 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAy8BAqbCFmzzXlV8BGalGS0MJ+cQh29u9qEJylaZewntGvkggLdKmMN2sigavhlNO3jBpG8XOHuO1hfAU0RD/LvrkOTEbDRVeboawnLo9vOlaxYhZT6non9Ofp1y/kEfGlOvxm3HR1zeaX8oRuqqj8Esb4Mu9U4feMVWvFOYZP53aCynC6XoLhXJKg7yCrxR3ZY9lYt4KEpO33xVayrgM7/4PTADscq3MumNQUt+s0v/+9y8S9tOIc/OriAQD+S1B64uTTNuVTObqK44z/zZ7f/7boMVl290A4LehChA4BKcw5JIVhNjURExPNrLDGbF0HURn+JIMaABuFsLaeU4vFwIDAQAB'}
+          -----END PUBLIC KEY-----`;
+          encrypt.setPublicKey(pubkey);
+          return encrypt.encrypt(data);
+        }
+
+        Vue.prototype.uncrypted = (encrypted, privateKey) => {
+          var decrypt = new JSEncrypt();
+          const privkey = `
+          -----BEGIN PRIVATE KEY-----
+          ${privateKey ? privateKey : 'MIIEpAIBAAKCAQEAy8BAqbCFmzzXlV8BGalGS0MJ+cQh29u9qEJylaZewntGvkggLdKmMN2sigavhlNO3jBpG8XOHuO1hfAU0RD/LvrkOTEbDRVeboawnLo9vOlaxYhZT6non9Ofp1y/kEfGlOvxm3HR1zeaX8oRuqqj8Esb4Mu9U4feMVWvFOYZP53aCynC6XoLhXJKg7yCrxR3ZY9lYt4KEpO33xVayrgM7/4PTADscq3MumNQUt+s0v/+9y8S9tOIc/OriAQD+S1B64uTTNuVTObqK44z/zZ7f/7boMVl290A4LehChA4BKcw5JIVhNjURExPNrLDGbF0HURn+JIMaABuFsLaeU4vFwIDAQABAoIBAQCmM33LrX1ewwOMCcIo/4aij93MSmvgHuAXJ5S2c86qT8rGHql5F3KPO9Oph4iYRs53uf+TMwhO9Co3Rj6Ex5uQ5AFUkbTiOEMeX2ojflwsBCISLYXE0PE7pnF+IM72T0YyZkBgLzkfmHCpoHhTzywJMAtelHMsdxENJzq5DnUcCR9xdqCEII/FybTHeqKk9Zwbj+lLAumRuDVduY/a2MdlS03M6pXwCybUtEyYVBUpooJJcMJY2WKm8fRMlhlNVKUH4AfwvxTUq0KHXxDLAiO/LWvcczQY5K91XVpCgVcxSDNPsHHNqMbiatKiWX45+1BKV+LJ+guCIgov46ozYYexAoGBAOvAneLd95w8eCMvz08RVzpzkqRAmELwPtXvc35qx6yBPsjoE/gdvnuhHEoHnbEeNAhARhE8heEBeGeVTtocAZ9wTeBPi7SBewx2odU0RUN7LTYpw7l8dVQom0HoStQ7HFr/mhGKK16heBSfpMrB9jjPeb2Jw7iQtfam3LetQTv5AoGBAN1ACOnYBpDBq3BTflyEvuUHRK6AWI5ycW19ObLdPMx0xJ0qZZtZgLoNwVJ6vUpS7moEd8/kuRsPQaMHvhrHBdwMgt+BqF20ZsxzMMf2UZt27uj2YtarwxljqG3TCqtrMDh4fb4tqkDVsP5FQz8gkoV/Qh1n4dz3DAoQKx8qwOePAoGBAI6YOud2CsbdbG0cBfB1NKWOMixXRcF3Pwp3gwv72jplEmzCsxFoLEbq9AlzAdaXxjEXb0oNqYynLwS4MrGKLxEZBIGgm4faqWqodspWi259mqMgL9qJhQ4aYY5Dyr8D4erIn4/sWr8qO09+IFbjauKB28jhAxknrmg6FVaj3MlBAoGAX+ypcKlmf1BYggTRHk+3bBjwoC+pNWlM4EmQwInHGGXv8Kw3DVmKxB++l4H7m8PE9lYllA74alD9BjAPLhDn63XJMBpI4weaIj43Ahs7WooAHyTjyWsC1Xktxx/e2l9IstMawV+PFzkO2c8xzqbSn+qCwbkOZfz+TUahS4v/wuUCgYBoy3d+1R7CTQVk9M/nuT7Kqj2gTCwD61FvWJSl29H8Jln7jdWizPd9DSoIzU2Q6l9mLhMvv1WWseUn0f8eGUhgBGgPqHXGH6RjbwfBJtpHK9jtdnznrqq/IaVeJOI8ENqUD5PJoEzD/ydCiCI6Kd3PXHXhtMH9EyEeTvHUD5ReZw=='}
+          -----END PRIVATE KEY-----`;
+          decrypt.setPrivateKey(privkey);
+          return decrypt.decrypt(encrypted);
+        }
+    </script>
+ 
+</html>
