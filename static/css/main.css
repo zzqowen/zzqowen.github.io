@@ -35,6 +35,16 @@ a {
   cursor: var(--cursor-pointer, pointer);
 }
 
+img {
+  border: none;
+  outline: none;
+  vertical-align: top;
+}
+
+.cursor-pointer {
+  cursor: var(--cursor-pointer, pointer);
+}
+
 .clear-float::after {
   content: '';
   display: block;
