@@ -91,7 +91,9 @@ function TreeNode({
           <PrimitiveValue value={value} />
         )}
 
-        {!isLast && <span className="json-tree-comma">,</span>}
+        {!isLast && (!isContainer || isCollapsed || isEmpty) && (
+          <span className="json-tree-comma">,</span>
+        )}
       </div>
 
       {isContainer && !isEmpty && !isCollapsed && (
@@ -111,6 +113,7 @@ function TreeNode({
             />
           ))}
           <div className="json-tree-row json-tree-close" style={indent}>
+            <span className="json-tree-toggle-space" />
             {isArray ? ']' : '}'}
             {!isLast && <span className="json-tree-comma">,</span>}
           </div>
