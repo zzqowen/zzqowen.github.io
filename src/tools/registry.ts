@@ -5,10 +5,10 @@ import type { ToolDefinition } from './types'
 export const toolRegistry: ToolDefinition[] = [
   {
     id: 'json',
+    moduleId: 'json',
     name: 'JSON 格式化',
-    description: '格式化、压缩并校验 JSON，快速定位语法错误所在的行与列。',
-    category: '开发工具',
-    keywords: ['json', '格式化', '压缩', '校验', '解析', '开发'],
+    description: '格式化、压缩并校验 JSON，结果支持按层级展开和收起。',
+    keywords: ['json', '格式化', '压缩', '校验', '解析', '树形'],
     icon: Braces,
     component: lazy(() => import('./json/JsonTool')),
     accent: 'lime',
@@ -16,10 +16,10 @@ export const toolRegistry: ToolDefinition[] = [
   },
   {
     id: 'json-diff',
+    moduleId: 'json',
     name: 'JSON 对比',
-    description: '同时对比多份 JSON，按路径列出新增、删除和修改的内容。',
-    category: '对比工具',
-    keywords: ['json', 'diff', '对比', '比较', '差异', '新增', '删除', '修改'],
+    description: '粘贴多份 JSON，直接在原文上高亮新增、删除和修改的内容。',
+    keywords: ['json', 'diff', '对比', '比较', '差异', '高亮'],
     icon: GitCompare,
     component: lazy(() => import('./diff/JsonDiffTool')),
     accent: 'amber',
@@ -27,9 +27,9 @@ export const toolRegistry: ToolDefinition[] = [
   },
   {
     id: 'image',
+    moduleId: 'image',
     name: '图片压缩与转换',
     description: '批量压缩图片，自由调整尺寸，并在 PNG、JPEG、WebP 间转换。',
-    category: '图片工具',
     keywords: ['image', '图片', '压缩', '转换', '缩放', 'png', 'jpeg', 'webp'],
     icon: Images,
     component: lazy(() => import('./image/ImageTool')),
@@ -40,4 +40,8 @@ export const toolRegistry: ToolDefinition[] = [
 
 export function getToolById(id: string | undefined) {
   return toolRegistry.find((tool) => tool.id === id)
+}
+
+export function getToolsByModule(moduleId: string) {
+  return toolRegistry.filter((tool) => tool.moduleId === moduleId)
 }

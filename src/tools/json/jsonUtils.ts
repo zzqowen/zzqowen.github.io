@@ -118,3 +118,17 @@ export function validateJson(input: string): JsonValidationResult {
   const result = parseJson(input)
   return result.success ? { success: true } : result
 }
+
+const JSON_START_PATTERN = /^[[{"\-\d]|^(?:true|false|null)\b/
+
+export function formatPastedJson(text: string): string | null {
+  const trimmed = text.trim()
+  if (!trimmed || !JSON_START_PATTERN.test(trimmed)) return null
+
+  try {
+    const formatted = JSON.stringify(JSON.parse(trimmed), null, 2)
+    return formatted ?? null
+  } catch {
+    return null
+  }
+}

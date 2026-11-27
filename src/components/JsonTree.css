@@ -1,0 +1,131 @@
+.json-tree {
+  min-width: 0;
+  padding: 10px 0;
+  color: var(--ink);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
+  line-height: 1.7;
+  tab-size: 2;
+}
+
+.json-tree-node {
+  min-width: 0;
+}
+
+.json-tree-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 2px;
+  min-height: 25px;
+  padding-right: 12px;
+  border-left: 2px solid transparent;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.json-tree-row[data-diff="added"] {
+  border-left-color: #7fb98a;
+  background: #f2fbf3;
+}
+
+.json-tree-row[data-diff="removed"] {
+  border-left-color: #d99c94;
+  background: #fff4f2;
+}
+
+.json-tree-row[data-diff="changed"] {
+  border-left-color: #d9be7c;
+  background: #fffaf0;
+}
+
+.json-tree-toggle {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 17px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  color: var(--soft);
+  background: transparent;
+  cursor: pointer;
+  transition: color 140ms ease, background 140ms ease;
+}
+
+.json-tree-toggle:hover {
+  color: var(--brand);
+  background: var(--lime-soft);
+}
+
+.json-tree-toggle-space {
+  flex-shrink: 0;
+  width: 17px;
+}
+
+.json-tree-key {
+  color: #35506a;
+  white-space: pre;
+}
+
+.json-tree-colon {
+  margin-right: 4px;
+  color: var(--soft);
+}
+
+.json-tree-bracket {
+  color: #4b5b50;
+  font-weight: 650;
+}
+
+.json-tree-summary {
+  color: var(--soft);
+  font-weight: 400;
+  font-size: 10px;
+}
+
+.json-tree-value[data-type="string"] {
+  color: #2f6b45;
+}
+
+.json-tree-value[data-type="number"] {
+  color: #8a5a18;
+}
+
+.json-tree-value[data-type="boolean"] {
+  color: #355b94;
+}
+
+.json-tree-value[data-type="null"] {
+  color: #8c948f;
+}
+
+.json-tree-comma {
+  color: #9aa39c;
+}
+
+.json-tree-close {
+  color: #4b5b50;
+  font-weight: 650;
+}
+
+.json-tree-row[data-diff="added"] .json-tree-bracket,
+.json-tree-row[data-diff="added"] .json-tree-close {
+  color: #2c6146;
+}
+
+.json-tree-row[data-diff="removed"] .json-tree-bracket,
+.json-tree-row[data-diff="removed"] .json-tree-close {
+  color: #8b4a44;
+}
+
+.json-tree-row[data-diff="changed"] .json-tree-bracket,
+.json-tree-row[data-diff="changed"] .json-tree-close {
+  color: var(--amber);
+}
+
+@media (max-width: 420px) {
+  .json-tree {
+    font-size: 11px;
+  }
+}

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import type { KeyboardEvent } from 'react'
 import {
   Braces,
@@ -8,11 +8,15 @@ import {
   Download,
   Eraser,
   FileCode2,
+  Minus,
   Minimize2,
+  Plus,
   ShieldCheck,
   Sparkles,
   WandSparkles,
 } from 'lucide-react'
+import JsonTreeView from '../../components/JsonTreeView'
+import { collectContainerPaths } from './jsonPath'
 import './JsonTool.css'
 import { formatJson, minifyJson, validateJson } from './jsonUtils'
 import type { JsonError, JsonIndent } from './jsonUtils'
@@ -50,17 +54,48 @@ export default function JsonTool() {
   const [input, setInput] = useState('')
   const [output, setOutput] = useState('')
   const [indent, setIndent] = useState<JsonIndent>(2)
+  const [collapsedPaths, setCollapsedPaths] = useState<Set<string>>(new Set())
   const [notice, setNotice] = useState<Notice>({
     tone: 'neutral',
     message: '输入 JSON 或载入示例，然后选择需要的操作。',
   })
   const inputRef = useRef<HTMLTextAreaElement>(null)
-  const outputRef = useRef<HTMLTextAreaElement>(null)
+
   const hasInput = input.trim().length > 0
+  const hasOutput = output.length > 0
+
+  const outputValue = useMemo(() => {
+    if (!output) return undefined
+
+    try {
+      return JSON.parse(output) as unknown
+    } catch {
+      return undefined
+    }
+  }, [output])
+
+  function toggleNode(path: string) {
+    setCollapsedPaths((current) => {
+      const next = new Set(current)
+      if (next.has(path)) next.delete(path)
+      else next.add(path)
+      return next
+    })
+  }
+
+  function expandAll() {
+    setCollapsedPaths(new Set())
+  }
+
+  function collapseAll() {
+    if (outputValue === undefined) return
+    setCollapsedPaths(new Set(collectContainerPaths(outputValue)))
+  }
 
   function handleInputChange(value: string) {
     setInput(value)
     setOutput('')
+    setCollapsedPaths(new Set())
     setNotice((current) => current.tone === 'neutral'
       ? current
       : { tone: 'neutral', message: '内容已修改，请选择格式化、压缩或校验。' })
@@ -68,6 +103,7 @@ export default function JsonTool() {
 
   function showError(error: JsonError) {
     setOutput('')
+    setCollapsedPaths(new Set())
     setNotice({
       tone: 'error',
       message: error.kind === 'syntax' ? `解析失败：${error.message}` : error.message,
@@ -95,10 +131,11 @@ export default function JsonTool() {
     }
 
     setOutput(result.output)
+    setCollapsedPaths(new Set())
     setNotice({
       tone: 'success',
       message: action === 'format'
-        ? `格式化完成，已使用 ${indent} 个空格缩进。`
+        ? `格式化完成，已使用 ${indent} 个空格缩进，可点击左侧箭头展开或收起。`
         : '压缩完成，已移除不必要的空白字符。',
     })
   }
@@ -106,12 +143,14 @@ export default function JsonTool() {
   function handleSample() {
     setInput(EXAMPLE_JSON)
     setOutput('')
+    setCollapsedPaths(new Set())
     setNotice({ tone: 'neutral', message: '示例已载入，点击“格式化”查看结果。' })
   }
 
   function handleClear() {
     setInput('')
     setOutput('')
+    setCollapsedPaths(new Set())
     setNotice({ tone: 'neutral', message: '已清空，请输入新的 JSON 内容。' })
     inputRef.current?.focus()
   }
@@ -123,9 +162,7 @@ export default function JsonTool() {
       await navigator.clipboard.writeText(output)
       setNotice({ tone: 'success', message: '输出内容已复制到剪贴板。' })
     } catch {
-      outputRef.current?.focus()
-      outputRef.current?.select()
-      setNotice({ tone: 'error', message: '自动复制失败，已选中输出内容，请按 Ctrl/Cmd+C 复制。' })
+      setNotice({ tone: 'error', message: '自动复制失败，请改用“下载”保存结果。' })
     }
   }
 
@@ -268,15 +305,35 @@ export default function JsonTool() {
               <span className="json-panel-icon" data-kind="output"><FileCode2 size={17} /></span>
               <div>
                 <h2 id="json-output-title">输出结果</h2>
-                <p>格式化或压缩后的 JSON</p>
+                <p>树形展示，可展开或收起任意层级</p>
               </div>
             </div>
             <div className="json-panel-actions">
               <button
                 className="button button-ghost json-panel-button"
                 type="button"
-                disabled={!output}
-                onClick={handleCopy}
+                disabled={!hasOutput}
+                onClick={expandAll}
+                aria-label="展开全部 JSON 节点"
+                title="展开全部"
+              >
+                <Plus size={14} /><span>展开</span>
+              </button>
+              <button
+                className="button button-ghost json-panel-button"
+                type="button"
+                disabled={!hasOutput}
+                onClick={collapseAll}
+                aria-label="收起全部 JSON 节点"
+                title="收起全部"
+              >
+                <Minus size={14} /><span>收起</span>
+              </button>
+              <button
+                className="button button-ghost json-panel-button"
+                type="button"
+                disabled={!hasOutput}
+                onClick={() => { void handleCopy() }}
                 aria-label="复制输出"
                 title="复制输出"
               >
@@ -285,7 +342,7 @@ export default function JsonTool() {
               <button
                 className="button button-ghost json-panel-button"
                 type="button"
-                disabled={!output}
+                disabled={!hasOutput}
                 onClick={handleDownload}
                 aria-label="下载 JSON 文件"
                 title="下载 JSON 文件"
@@ -294,21 +351,22 @@ export default function JsonTool() {
               </button>
             </div>
           </div>
-          <textarea
-            ref={outputRef}
-            className="json-editor"
-            value={output}
-            readOnly
-            placeholder="处理结果将在这里显示…"
-            aria-label="JSON 输出结果"
-            autoCapitalize="off"
-            autoCorrect="off"
-            spellCheck={false}
-            wrap="off"
-          />
+
+          <div className="json-output-body">
+            {hasOutput && outputValue !== undefined ? (
+              <JsonTreeView
+                value={outputValue}
+                collapsedPaths={collapsedPaths}
+                onToggle={toggleNode}
+              />
+            ) : (
+              <p className="json-output-empty">处理结果将在这里显示…</p>
+            )}
+          </div>
+
           <div className="json-panel-footer">
-            <span>{countLines(output)} 行</span>
-            <span>{output.length.toLocaleString('zh-CN')} 字符</span>
+            <span>{hasOutput ? `${countLines(output)} 行` : '等待处理'}</span>
+            <span>{hasOutput ? `${output.length.toLocaleString('zh-CN')} 字符` : ''}</span>
           </div>
         </section>
       </div>

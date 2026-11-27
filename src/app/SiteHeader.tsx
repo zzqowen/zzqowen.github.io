@@ -1,6 +1,6 @@
 import { ArrowUpRight, Github } from 'lucide-react'
 import { Link, NavLink } from 'react-router-dom'
-import { siteModules } from '../modules/registry'
+import { moduleRegistry } from '../modules/registry'
 
 export default function SiteHeader() {
   return (
@@ -18,8 +18,9 @@ export default function SiteHeader() {
         </Link>
 
         <nav className="header-nav" aria-label="主导航">
-          {siteModules.map((module) => (
-            <NavLink key={module.id} to={module.path} className="nav-link">
+          <NavLink to="/" end className="nav-link">工具库</NavLink>
+          {moduleRegistry.map((module) => (
+            <NavLink key={module.id} to={`/modules/${module.id}`} className="nav-link">
               {module.name}
             </NavLink>
           ))}

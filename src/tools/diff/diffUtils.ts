@@ -1,4 +1,5 @@
 import { parseJsonError } from '../json/jsonUtils'
+import { buildJsonPath } from '../json/jsonPath'
 
 export type DiffType = 'added' | 'removed' | 'changed'
 
@@ -21,7 +22,6 @@ export type JsonParseResult =
 export const DEFAULT_MAX_ENTRIES = 500
 
 const MAX_VALUE_LENGTH = 120
-const IDENTIFIER_PATTERN = /^[A-Za-z_$][\w$]*$/
 
 export function parseJsonText(text: string): JsonParseResult {
   if (text.trim().length === 0) {
@@ -71,10 +71,6 @@ function valueKind(value: unknown): string {
   return typeof value
 }
 
-function joinPath(parent: string, key: string): string {
-  return IDENTIFIER_PATTERN.test(key) ? `${parent}.${key}` : `${parent}[${JSON.stringify(key)}]`
-}
-
 export function diffJsonValues(base: unknown, target: unknown, maxEntries = DEFAULT_MAX_ENTRIES): DiffResult {
   const entries: DiffEntry[] = []
   let truncated = false
@@ -96,7 +92,7 @@ export function diffJsonValues(base: unknown, target: unknown, maxEntries = DEFA
     if (isPlainObject(left) && isPlainObject(right)) {
       const keys = new Set([...Object.keys(left), ...Object.keys(right)])
       keys.forEach((key) => {
-        const nextPath = joinPath(path, key)
+        const nextPath = buildJsonPath(path, key)
         const inLeft = Object.prototype.hasOwnProperty.call(left, key)
         const inRight = Object.prototype.hasOwnProperty.call(right, key)
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatJson, minifyJson, parseJsonError, validateJson } from './jsonUtils'
+import { formatPastedJson, formatJson, minifyJson, parseJsonError, validateJson } from './jsonUtils'
 
 describe('JSON 纯函数', () => {
   it('接受对象、数组及标量等有效 JSON', () => {
@@ -81,7 +81,7 @@ describe('JSON 纯函数', () => {
     })
   })
 
-  it('原生错误缺少 position 时使用语法扫描定位行列', () => {
+  it('无法提取 position 时使用语法扫描定位行列', () => {
     const input = '{\n  "broken": ,\n  "ok": true\n}'
     const result = parseJsonError(input, new SyntaxError("Unexpected token ',', input is not valid JSON"))
 
@@ -90,5 +90,16 @@ describe('JSON 纯函数', () => {
     expect(result.position).toBe(input.indexOf(','))
     expect(result.line).toBe(2)
     expect(result.column).toBe(13)
+  })
+
+  it('粘贴有效 JSON 时返回两空格格式化的内容', () => {
+    expect(formatPastedJson('{"a":1,"b":[1,2]}')).toBe('{\n  "a": 1,\n  "b": [\n    1,\n    2\n  ]\n}')
+    expect(formatPastedJson('  [1,2]  ')).toBe('[\n  1,\n  2\n]')
+  })
+
+  it('粘贴非 JSON 或无效 JSON 时不处理', () => {
+    expect(formatPastedJson('hello')).toBeNull()
+    expect(formatPastedJson('{broken')).toBeNull()
+    expect(formatPastedJson('   ')).toBeNull()
   })
 })

@@ -742,28 +742,53 @@ select:focus-visible {
   cursor: pointer;
 }
 
-.category-tabs {
+.module-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.module-tags span {
+  padding: 4px 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--muted);
+  background: var(--bg);
+  font-size: 10px;
+}
+
+.module-card .tool-card-body {
+  margin-top: 34px;
+}
+
+.module-tabs {
   display: flex;
   gap: 5px;
+  width: fit-content;
+  max-width: 100%;
+  overflow-x: auto;
   padding: 4px;
   border: 1px solid var(--line);
   border-radius: 11px;
   background: #ecefe8;
 }
 
-.category-tabs button {
-  padding: 8px 15px;
-  border: 0;
+.module-tabs a {
+  padding: 8px 14px;
   border-radius: 7px;
   color: #6c766e;
-  background: transparent;
-  cursor: pointer;
   font-size: 12px;
   font-weight: 650;
+  white-space: nowrap;
   transition: background 150ms ease, color 150ms ease, box-shadow 150ms ease;
 }
 
-.category-tabs button.active {
+.module-tabs a:hover:not(.active) {
+  color: var(--ink);
+}
+
+.module-tabs a.active {
   color: var(--ink);
   background: #fff;
   box-shadow: 0 2px 6px rgba(31, 48, 37, 0.07);
@@ -1252,7 +1277,8 @@ select:focus-visible {
 
 @media (max-width: 820px) {
   .header-nav {
-    margin-left: 35px;
+    margin-left: 22px;
+    gap: 18px;
   }
 
   .local-badge {
@@ -1339,7 +1365,8 @@ select:focus-visible {
   }
 
   .header-nav {
-    margin-left: 25px;
+    margin-left: 14px;
+    gap: 14px;
   }
 
   .nav-link {
@@ -1488,13 +1515,8 @@ select:focus-visible {
     width: 100%;
   }
 
-  .category-tabs {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .category-tabs button {
-    padding-inline: 8px;
+  .module-tabs {
+    width: 100%;
   }
 
   .tool-grid {
@@ -1574,6 +1596,25 @@ select:focus-visible {
 
   .tool-local-note {
     display: none;
+  }
+}
+
+@media (max-width: 460px) {
+  .header-nav {
+    margin-left: 10px;
+    gap: 10px;
+  }
+
+  .nav-link {
+    font-size: 11px;
+  }
+
+  .nav-link.active::after {
+    width: 12px;
+  }
+
+  .brand-name {
+    font-size: 14px;
   }
 }
 

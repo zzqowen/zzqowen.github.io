@@ -1,16 +1,16 @@
 import type { ComponentType, LazyExoticComponent } from 'react'
 import type { LucideIcon } from 'lucide-react'
 
-export type ToolCategory = '开发工具' | '对比工具' | '图片工具'
+export type ToolAccent = 'lime' | 'blue' | 'amber'
 
 export interface ToolDefinition {
   id: string
+  moduleId: string
   name: string
   description: string
-  category: ToolCategory
   keywords: string[]
   icon: LucideIcon
   component: LazyExoticComponent<ComponentType>
-  accent: 'lime' | 'blue' | 'amber'
+  accent: ToolAccent
   action: string
 }

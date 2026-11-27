@@ -1,8 +1,9 @@
 import { useEffect } from 'react'
-import { Route, Routes, useLocation } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation, useParams } from 'react-router-dom'
 import HomePage from '../pages/HomePage'
-import ToolPage from '../pages/ToolPage'
+import ModulePage from '../pages/ModulePage'
 import NotFoundPage from '../pages/NotFoundPage'
+import { getToolById } from '../tools/registry'
 import SiteHeader from './SiteHeader'
 import SiteFooter from './SiteFooter'
 
@@ -16,6 +17,13 @@ function ScrollManager() {
   return null
 }
 
+function LegacyToolRedirect() {
+  const { toolId } = useParams()
+  const tool = getToolById(toolId)
+
+  return <Navigate to={tool ? `/modules/${tool.moduleId}/${tool.id}` : '/'} replace />
+}
+
 export default function App() {
   return (
     <div className="app-shell">
@@ -24,7 +32,9 @@ export default function App() {
       <main>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/tools/:toolId" element={<ToolPage />} />
+          <Route path="/modules/:moduleId" element={<ModulePage />} />
+          <Route path="/modules/:moduleId/:toolId" element={<ModulePage />} />
+          <Route path="/tools/:toolId" element={<LegacyToolRedirect />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>

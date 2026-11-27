@@ -14,16 +14,16 @@ import {
   Zap,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { filterTools } from '../tools/filterTools'
-import { toolRegistry } from '../tools/registry'
-import type { ToolCategory } from '../tools/types'
-
-const categories: Array<ToolCategory | '全部'> = ['全部', '开发工具', '对比工具', '图片工具']
+import { moduleRegistry } from '../modules/registry'
+import { filterModules } from '../tools/filterModules'
+import { getToolsByModule, toolRegistry } from '../tools/registry'
 
 export default function HomePage() {
   const [query, setQuery] = useState('')
-  const [category, setCategory] = useState<ToolCategory | '全部'>('全部')
-  const filteredTools = useMemo(() => filterTools(toolRegistry, query, category), [query, category])
+  const filteredModules = useMemo(
+    () => filterModules(moduleRegistry, toolRegistry, query),
+    [query],
+  )
 
   useEffect(() => {
     document.title = 'Owen 工具箱｜简单好用的在线工具'
@@ -51,7 +51,7 @@ export default function HomePage() {
               <span className="hero-assurance"><ShieldCheck size={17} />数据不离开浏览器</span>
             </div>
             <dl className="hero-stats">
-              <div><dt>{String(toolRegistry.length).padStart(2, '0')}</dt><dd>精选工具</dd></div>
+              <div><dt>{String(toolRegistry.length).padStart(2, '0')}</dt><dd>在线工具</dd></div>
               <div><dt>0</dt><dd>数据上传</dd></div>
               <div><dt>100<span>%</span></dt><dd>免费使用</dd></div>
             </dl>
@@ -93,21 +93,21 @@ export default function HomePage() {
       <section className="tools-section container" id="tools" aria-labelledby="tools-heading">
         <div className="section-heading">
           <div>
-            <span className="section-kicker">TOOLS / 工具库</span>
+            <span className="section-kicker">MODULES / 工具模块</span>
             <h2 id="tools-heading">今天想做点什么？</h2>
           </div>
-          <p>没有繁杂步骤，打开就能用。</p>
+          <p>每个模块内包含相关工具，打开就能用。</p>
         </div>
 
         <div className="tool-filters">
           <label className="search-box">
             <Search size={19} aria-hidden="true" />
-            <span className="sr-only">搜索工具</span>
+            <span className="sr-only">搜索模块或工具</span>
             <input
               type="search"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="搜索工具，例如 JSON、压缩…"
+              placeholder="搜索模块或工具，例如 JSON、对比、图片…"
             />
             {query && (
               <button type="button" onClick={() => setQuery('')} aria-label="清空搜索">
@@ -115,55 +115,52 @@ export default function HomePage() {
               </button>
             )}
           </label>
-          <div className="category-tabs" role="group" aria-label="按分类筛选工具">
-            {categories.map((item) => (
-              <button
-                key={item}
-                className={category === item ? 'active' : ''}
-                type="button"
-                onClick={() => setCategory(item)}
-                aria-pressed={category === item}
-              >
-                {item}
-              </button>
-            ))}
-          </div>
         </div>
 
         <div className="results-meta" aria-live="polite">
-          <span>{filteredTools.length} 个工具</span>
-          {(query || category !== '全部') && <span>符合当前筛选</span>}
+          <span>{filteredModules.length} 个模块</span>
+          <span>共 {toolRegistry.length} 个工具</span>
         </div>
 
-        {filteredTools.length > 0 ? (
+        {filteredModules.length > 0 ? (
           <div className="tool-grid">
-            {filteredTools.map((tool, index) => {
-              const Icon = tool.icon
+            {filteredModules.map((module, index) => {
+              const Icon = module.icon
+              const tools = getToolsByModule(module.id)
+
               return (
-                <Link className="tool-card" data-accent={tool.accent} to={`/tools/${tool.id}`} key={tool.id}>
+                <Link
+                  className="tool-card module-card"
+                  data-accent={module.accent}
+                  to={`/modules/${module.id}`}
+                  key={module.id}
+                >
                   <div className="tool-card-top">
                     <span className="tool-card-index">0{index + 1}</span>
                     <span className="tool-card-icon"><Icon size={28} strokeWidth={1.7} /></span>
                     <span className="tool-card-arrow"><ArrowRight size={20} /></span>
                   </div>
                   <div className="tool-card-body">
-                    <span className="tool-category">{tool.category}</span>
-                    <h3>{tool.name}</h3>
-                    <p>{tool.description}</p>
+                    <span className="tool-category">{tools.length} 个工具</span>
+                    <h3>{module.name}</h3>
+                    <p>{module.description}</p>
+                    <div className="module-tags">
+                      {tools.map((tool) => <span key={tool.id}>{tool.name}</span>)}
+                    </div>
                   </div>
                   <div className="tool-card-footer">
-                    <span>{tool.action}</span>
+                    <span>进入模块</span>
                     <span className="tool-card-tag"><Zap size={13} />即开即用</span>
                   </div>
                 </Link>
               )
             })}
-            <div className="tool-card tool-card-coming" aria-label="更多工具持续开发中">
+            <div className="tool-card tool-card-coming" aria-label="更多模块持续开发中">
               <div className="coming-pattern" aria-hidden="true"><FileJson2 size={38} /><ImageIcon size={30} /></div>
               <div className="tool-card-body">
                 <span className="tool-category">持续进化</span>
-                <h3>下一款，敬请期待</h3>
-                <p>更多实用工具正在路上，让这里成为你的工作台。</p>
+                <h3>下一个模块，敬请期待</h3>
+                <p>新的工具模块正在路上，让这里成为你的工作台。</p>
               </div>
               <span className="coming-label"><span />IN THE MAKING</span>
             </div>
@@ -171,10 +168,10 @@ export default function HomePage() {
         ) : (
           <div className="empty-state">
             <SearchX size={34} />
-            <h3>没有找到相关工具</h3>
-            <p>试试其他关键词，或者清除当前筛选。</p>
-            <button className="button button-secondary" type="button" onClick={() => { setQuery(''); setCategory('全部') }}>
-              查看全部工具
+            <h3>没有找到相关模块</h3>
+            <p>试试其他关键词，例如“JSON”“压缩”。</p>
+            <button className="button button-secondary" type="button" onClick={() => setQuery('')}>
+              查看全部模块
             </button>
           </div>
         )}
