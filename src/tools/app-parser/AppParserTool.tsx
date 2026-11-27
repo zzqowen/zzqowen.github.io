@@ -15,6 +15,7 @@ import {
 import { parseApk } from './apkParser'
 import { parseIpa } from './ipaParser'
 import type { AndroidAppInfo, AppIcon, AppInfo, IosAppInfo, ParsedApp } from './types'
+import { translatePermission } from './permissionsCn'
 import { useI18n } from '../../i18n/context'
 import type { TranslationKey } from '../../i18n/dictionary'
 import './AppParser.css'
@@ -358,19 +359,26 @@ export default function AppParserTool() {
               )}
             </div>
 
-            {result.info.platform === 'android' && (
-              <div className="app-info-card">
-                <h3>{t('app.permissionsTitle')}</h3>
-                {result.info.permissions.length === 0 ? (
-                  <p className="app-empty">{t('app.noPermissions')}</p>
-                ) : (
-                  <ul className="app-chip-list">
-                    {result.info.permissions.map((p) => (
-                      <li key={p} title={p}>{p.replace(/^android\.permission\./, '')}</li>
-                    ))}
-                  </ul>
-                )}
-              </div>
+            {result.info.platform === 'android' && result.info.permissions.length > 0 && (
+              <details className="app-info-card app-permissions-card">
+                <summary>
+                  <h3>{t('app.permissionsTitle')}</h3>
+                  <span className="app-permission-count">
+                    {result.info.permissions.length}
+                  </span>
+                </summary>
+                <ul className="app-chip-list">
+                  {result.info.permissions.map((p) => {
+                    const t = translatePermission(p)
+                    return (
+                      <li key={p} title={`${p}\n${t.category}`}>
+                        <span className="app-chip-cn">{t.cn}</span>
+                        <span className="app-chip-en">{p.replace(/^android\.permission\./, '')}</span>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </details>
             )}
 
             {result.info.platform === 'android' && result.info.features.length + result.info.usesFeatures.length > 0 && (

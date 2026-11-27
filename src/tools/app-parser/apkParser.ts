@@ -3,8 +3,36 @@ import { parseApkMeta, ApkParseError } from 'apk-meta-parser'
 import type { ApkMeta } from 'apk-meta-parser'
 import type { AndroidAppInfo, AppIcon, ParsedApp } from './types'
 
-const APK_ICON_DIRS = /^res\/(mipmap|drawable)[a-z0-9-]*\/.+\.(png|webp|jpg|jpeg)$/i
-const APK_ICON_KEYWORDS = /(?:ic_launcher|ic_app|app_icon|application_icon|adaptive|launcher)/i
+// APK 图标候选：任何 res/ 下的图片都纳入（包括 adaptive XML 里可能用到的 foreground 图）
+const APK_ICON_ANY = /^res\/.+?\/.+\.(png|webp|jpg|jpeg)$/i
+
+// 文件名关键词权重
+const KEYWORD_SCORE: Array<[RegExp, number]> = [
+  [/ic_launcher_round/i, 260_000],  // 最优先：圆图标
+  [/ic_launcher_foreground/i, 180_000], // adaptive icon 的前景层
+  [/ic_launcher$/i, 260_000],  // 标准 ic_launcher（无后缀）
+  [/ic_launcher/i, 150_000],   // 其他 ic_launcher
+  [/app[_-]?icon/i, 100_000],
+  [/application[_-]?icon/i, 100_000],
+  [/ic_app/i, 90_000],
+  [/adaptive[_-]?foreground/i, 180_000],
+  [/foreground/i, 50_000],
+  [/background/i, -30_000],   // adaptive 的背景层不要
+  [/splash/i, -50_000],       // 启动图不要
+  [/notification/i, -20_000], // 通知图标小且不是主图标
+]
+
+// 密度目录权重（数值越高优先级越大）
+const DENSITY_SCORE: Array<[RegExp, number]> = [
+  [/xxxhdpi/i, 100_000],
+  [/xxhdpi/i, 80_000],
+  [/xhdpi/i, 60_000],
+  [/hdpi/i, 40_000],
+  [/nodpi/i, 20_000],
+  [/mdpi/i, 0],
+  [/ldpi/i, -20_000],
+  [/dpi-?v26/i, 10_000], // anydpi-v26 也可能有 PNG
+]
 
 function mimeFromName(name: string): string {
   const lower = name.toLowerCase()
@@ -14,9 +42,14 @@ function mimeFromName(name: string): string {
   return 'application/octet-stream'
 }
 
-function score(path: string, size: number): number {
-  const hasKeyword = APK_ICON_KEYWORDS.test(path)
-  return size * (hasKeyword ? 1.3 : 1) + (hasKeyword ? 20_000 : 0)
+function scorePath(path: string, size: number): number {
+  let score = size // 基础：越大越好
+  for (const [re, w] of KEYWORD_SCORE) if (re.test(path)) score += w
+  for (const [re, w] of DENSITY_SCORE) if (re.test(path)) score += w
+  // 路径里目录层级越多通常越底层（xxxhdpi/ic_launcher.png 胜过 ic_launcher.png）
+  const slashCount = (path.match(/\//g) || []).length
+  score += slashCount * 1000
+  return score
 }
 
 const ERROR_MAP: Record<string, { zh: string; en: string; code: string }> = {
@@ -52,7 +85,6 @@ export async function parseApk(file: File): Promise<ParsedApp> {
     targetSdkVersion: meta.targetSdkVersion !== undefined ? String(meta.targetSdkVersion) : undefined,
     permissions: meta.permissions ?? [],
     mainActivity: meta.mainActivity,
-    // apk-meta-parser 不返回 features / activities / iconResource，保持为空数组
     features: [],
     usesFeatures: [],
     activities: meta.mainActivity ? [meta.mainActivity] : [],
@@ -68,23 +100,28 @@ export async function parseApk(file: File): Promise<ParsedApp> {
   const arrayBuffer = await file.arrayBuffer()
   const zip = await JSZip.loadAsync(arrayBuffer)
 
-  const candidateEntries: Array<{ path: string; entry: JSZip.JSZipObject; size: number; score: number }> = []
+  const candidatePaths: string[] = []
   zip.forEach((relativePath, zipEntry) => {
     if (zipEntry.dir) return
-    if (!APK_ICON_DIRS.test(relativePath)) return
-    if (relativePath.toLowerCase().endsWith('.xml')) return
-    // 将 entry 先列为占位，稍后再读 bytes
-    candidateEntries.push({ path: relativePath, entry: zipEntry, size: 0, score: 0 })
+    if (!APK_ICON_ANY.test(relativePath)) return
+    candidatePaths.push(relativePath)
   })
 
-  // 并发读取 bytes 并用实际体积打分
-  const withSize = await Promise.all(candidateEntries.map(async (c) => {
-    const bytes = new Uint8Array(await c.entry.async('arraybuffer'))
-    return { ...c, bytes, size: bytes.length, score: score(c.path, bytes.length) }
-  }))
-  withSize.sort((a, b) => b.score - a.score)
+  if (candidatePaths.length === 0) {
+    warnings.push('APK 中没有可提取的 PNG/WebP/JPG 图标')
+  }
 
-  const allIcons: AppIcon[] = withSize.slice(0, 24).map((item) => ({
+  const withSize = await Promise.all(candidatePaths.map(async (path) => {
+    const entry = zip.file(path)
+    if (!entry) return null
+    const bytes = new Uint8Array(await entry.async('arraybuffer'))
+    return { path, bytes, size: bytes.length, score: scorePath(path, bytes.length) }
+  }))
+
+  const valid = withSize.filter((c): c is NonNullable<typeof c> => c !== null)
+  valid.sort((a, b) => b.score - a.score)
+
+  const allIcons: AppIcon[] = valid.slice(0, 24).map((item) => ({
     path: item.path,
     bytes: item.bytes,
     mime: mimeFromName(item.path),
