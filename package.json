@@ -15,6 +15,7 @@
     "jsonc-parser": "^3.3.1",
     "jszip": "^3.10.1",
     "lucide-react": "^0.468.0",
+    "parse-ipa": "^4.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.1.1",
