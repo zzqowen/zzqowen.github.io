@@ -16,6 +16,8 @@
   --lime: #d9f99d;
   --lime-soft: #effadf;
   --blue-soft: #e2edff;
+  --amber-soft: #fbeed4;
+  --amber: #8a5a18;
   --blue: #355b94;
   --danger: #b6403a;
   --danger-soft: #fff0ed;
@@ -812,6 +814,10 @@ select:focus-visible {
   background: var(--blue-soft);
 }
 
+.tool-card[data-accent="amber"]::before {
+  background: var(--amber-soft);
+}
+
 .tool-card:not(.tool-card-coming):hover {
   border-color: #b8c6b7;
   box-shadow: var(--shadow);
@@ -852,6 +858,11 @@ select:focus-visible {
 .tool-card[data-accent="blue"] .tool-card-icon {
   color: var(--blue);
   background: var(--blue-soft);
+}
+
+.tool-card[data-accent="amber"] .tool-card-icon {
+  color: var(--amber);
+  background: var(--amber-soft);
 }
 
 .tool-card:hover .tool-card-icon {
@@ -1127,6 +1138,11 @@ select:focus-visible {
 .tool-title-icon[data-accent="blue"] {
   color: var(--blue);
   background: var(--blue-soft);
+}
+
+.tool-title-icon[data-accent="amber"] {
+  color: var(--amber);
+  background: var(--amber-soft);
 }
 
 .tool-title-row .tool-category {

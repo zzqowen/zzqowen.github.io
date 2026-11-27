@@ -18,7 +18,7 @@ import { filterTools } from '../tools/filterTools'
 import { toolRegistry } from '../tools/registry'
 import type { ToolCategory } from '../tools/types'
 
-const categories: Array<ToolCategory | '全部'> = ['全部', '开发工具', '图片工具']
+const categories: Array<ToolCategory | '全部'> = ['全部', '开发工具', '对比工具', '图片工具']
 
 export default function HomePage() {
   const [query, setQuery] = useState('')
