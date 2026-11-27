@@ -4,6 +4,7 @@ import {
   getOutputFileName,
   getUniqueFileName,
   resolveOutputType,
+  shouldKeepOriginal,
 } from './imageUtils'
 
 describe('calculateOutputDimensions', () => {
@@ -89,5 +90,26 @@ describe('输出文件名', () => {
     const usedNames = new Set(['photo-processed.jpg'])
     expect(getUniqueFileName('photo-processed.jpg', usedNames)).toBe('photo-processed-2.jpg')
     expect(getUniqueFileName('other-processed.jpg', usedNames)).toBe('other-processed.jpg')
+  })
+})
+
+describe('是否保留原图', () => {
+  const size = { width: 800, height: 600 }
+
+  it('同格式同尺寸且输出更大时保留原图', () => {
+    expect(shouldKeepOriginal(1000, 1200, size, size, 'image/jpeg', 'image/jpeg')).toBe(true)
+  })
+
+  it('输出体积与原图相同时保留原图', () => {
+    expect(shouldKeepOriginal(1000, 1000, size, size, 'image/png', 'image/png')).toBe(true)
+  })
+
+  it('输出更小时使用处理结果', () => {
+    expect(shouldKeepOriginal(1000, 800, size, size, 'image/jpeg', 'image/jpeg')).toBe(false)
+  })
+
+  it('尺寸或格式变化时使用处理结果', () => {
+    expect(shouldKeepOriginal(1000, 1200, size, { width: 400, height: 300 }, 'image/jpeg', 'image/jpeg')).toBe(false)
+    expect(shouldKeepOriginal(1000, 1200, size, size, 'image/png', 'image/jpeg')).toBe(false)
   })
 })

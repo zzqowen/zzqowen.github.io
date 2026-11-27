@@ -26,6 +26,7 @@ import {
   getUniqueFileName,
   isSupportedImageType,
   resolveOutputType,
+  shouldKeepOriginal,
 } from './imageUtils'
 import type { ImageMimeType, OutputFormat } from './imageUtils'
 import { useI18n } from '../../i18n/context'
@@ -91,6 +92,7 @@ interface ProcessedImage {
   type: ImageMimeType
   width: number
   height: number
+  keptOriginal?: boolean
 }
 
 interface ImageItem {
@@ -191,6 +193,26 @@ async function convertImage(
   canvas.width = 0
   canvas.height = 0
   onProgress(92)
+
+  // 同格式同尺寸时，如果重新编码没有得到更小体积，直接保留原图，避免压缩后反而变大
+  if (shouldKeepOriginal(
+    item.file.size,
+    blob.size,
+    { width: item.width, height: item.height },
+    dimensions,
+    item.sourceType,
+    outputType,
+  )) {
+    return {
+      blob: item.file,
+      url: createObjectUrl(item.file),
+      fileName: getOutputFileName(item.file.name, outputType),
+      type: outputType,
+      width: item.width,
+      height: item.height,
+      keptOriginal: true,
+    }
+  }
 
   return {
     blob,
@@ -582,13 +604,15 @@ export default function ImageTool() {
                   const sizeChange = output ? getSizeChangePercent(item.file.size, output.blob.size) : 0
                   const sizeChangeLabel = !output
                     ? ''
-                    : output.blob.size === item.file.size
-                      ? t('image.sizeSame')
-                      : sizeChange === 0
-                        ? t('image.sizeUnderOne')
-                        : sizeChange > 0
-                          ? t('image.sizeIncreased', { percent: sizeChange })
-                          : t('image.sizeDecreased', { percent: Math.abs(sizeChange) })
+                    : output.keptOriginal
+                      ? t('image.sizeKeptOriginal')
+                      : output.blob.size === item.file.size
+                        ? t('image.sizeSame')
+                        : sizeChange === 0
+                          ? t('image.sizeUnderOne')
+                          : sizeChange > 0
+                            ? t('image.sizeIncreased', { percent: sizeChange })
+                            : t('image.sizeDecreased', { percent: Math.abs(sizeChange) })
 
                   return (
                     <li className="image-item" data-status={item.status} key={item.id}>

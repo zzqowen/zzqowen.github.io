@@ -98,6 +98,24 @@ export function getSizeChangePercent(originalSize: number, outputSize: number): 
   return Math.round(((outputSize - originalSize) / originalSize) * 100)
 }
 
+/**
+ * 重新编码没有带来体积收益时，保留原始文件：
+ * 格式与尺寸都未变化，且输出体积大于等于原图。
+ */
+export function shouldKeepOriginal(
+  sourceSize: number,
+  outputSize: number,
+  sourceDimensions: Dimensions,
+  outputDimensions: Dimensions,
+  sourceType: ImageMimeType,
+  outputType: ImageMimeType,
+): boolean {
+  return sourceType === outputType
+    && sourceDimensions.width === outputDimensions.width
+    && sourceDimensions.height === outputDimensions.height
+    && outputSize >= sourceSize
+}
+
 export function formatBytes(bytes: number): string {
   if (!Number.isFinite(bytes) || bytes <= 0) return '0 B'
   if (bytes < 1024) return `${Math.round(bytes)} B`
