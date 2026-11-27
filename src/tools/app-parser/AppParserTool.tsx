@@ -20,8 +20,6 @@ import { useI18n } from '../../i18n/context'
 import type { TranslationKey } from '../../i18n/dictionary'
 import './AppParser.css'
 
-const MAX_FILE_SIZE = 100 * 1024 * 1024
-
 type NoticeTone = 'neutral' | 'success' | 'error'
 type Notice = { tone: NoticeTone; key: TranslationKey; vars?: Record<string, string | number>; detail?: string }
 
@@ -122,10 +120,6 @@ export default function AppParserTool() {
     }
     if (fileEntry.size === 0) {
       setNotice({ tone: 'error', key: 'app.errorEmptyFile', vars: { name: fileEntry.name } })
-      return
-    }
-    if (fileEntry.size > MAX_FILE_SIZE) {
-      setNotice({ tone: 'error', key: 'app.errorTooLarge', vars: { name: fileEntry.name, size: formatBytes(MAX_FILE_SIZE) } })
       return
     }
 
@@ -360,7 +354,7 @@ export default function AppParserTool() {
             </div>
 
             {result.info.platform === 'android' && result.info.permissions.length > 0 && (
-              <details className="app-info-card app-permissions-card">
+              <details open className="app-info-card app-permissions-card">
                 <summary>
                   <h3>{t('app.permissionsTitle')}</h3>
                   <span className="app-permission-count">
