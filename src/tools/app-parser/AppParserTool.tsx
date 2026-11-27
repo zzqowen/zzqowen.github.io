@@ -354,13 +354,8 @@ export default function AppParserTool() {
             </div>
 
             {result.info.platform === 'android' && result.info.permissions.length > 0 && (
-              <details open className="app-info-card app-permissions-card">
-                <summary>
-                  <h3>{t('app.permissionsTitle')}</h3>
-                  <span className="app-permission-count">
-                    {result.info.permissions.length}
-                  </span>
-                </summary>
+              <div className="app-info-card">
+                <h3>{t('app.permissionsTitle')}</h3>
                 <ul className="app-chip-list">
                   {result.info.permissions.map((p) => {
                     const t = translatePermission(p)
@@ -372,7 +367,7 @@ export default function AppParserTool() {
                     )
                   })}
                 </ul>
-              </details>
+              </div>
             )}
 
             {result.info.platform === 'android' && result.info.features.length + result.info.usesFeatures.length > 0 && (

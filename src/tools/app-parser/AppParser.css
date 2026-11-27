@@ -197,7 +197,7 @@
 /* ====== 结果容器 ====== */
 .app-result {
   display: grid;
-  gap: 16px;
+  gap: 10px;
   padding: 18px;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
@@ -207,16 +207,16 @@
 .app-result-header {
   display: grid;
   grid-template-columns: auto 1fr auto;
-  gap: 16px;
-  align-items: start;
+  gap: 14px;
+  align-items: center;
 }
 
 .app-result-icon-box {
-  width: 112px;
-  height: 112px;
+  width: 80px;
+  height: 80px;
   display: grid;
   place-items: center;
-  border-radius: 26px;
+  border-radius: 20px;
   background: var(--bg);
   overflow: hidden;
   box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04);
@@ -233,9 +233,9 @@
 }
 
 .app-result-title-row h2 {
-  margin: 0 0 7px;
+  margin: 0;
   color: var(--ink);
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   word-break: break-word;
   line-height: 1.25;
@@ -247,6 +247,7 @@
   gap: 8px;
   color: var(--muted);
   font-size: 13px;
+  margin-top: 4px;
 }
 
 .app-platform {
@@ -286,7 +287,7 @@
 .app-result-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 14px;
+  gap: 12px;
 }
 
 .app-info-card {
@@ -372,48 +373,6 @@
   margin: 0;
   color: var(--soft);
   font-size: 12px;
-}
-
-/* ====== 权限卡片（折叠） ====== */
-.app-permissions-card[open] summary {
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 10px;
-}
-
-.app-permissions-card summary {
-  cursor: pointer;
-  list-style: none;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.app-permissions-card summary::-webkit-details-marker { display: none; }
-.app-permissions-card summary::after {
-  content: '›';
-  color: var(--muted);
-  font-size: 18px;
-  line-height: 1;
-  transition: transform 160ms ease;
-}
-.app-permissions-card[open] summary::after {
-  transform: rotate(90deg);
-}
-
-.app-permission-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 22px;
-  height: 20px;
-  padding: 0 6px;
-  border-radius: 999px;
-  background: var(--lime-soft);
-  color: var(--brand);
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 1;
 }
 
 /* ====== 其他图标网格 ====== */
@@ -502,10 +461,11 @@
 /* ====== 响应式 ====== */
 @media (max-width: 720px) {
   .app-result-header { grid-template-columns: 1fr; justify-items: start; }
-  .app-result-icon-box { width: 84px; height: 84px; border-radius: 20px; }
+  .app-result-icon-box { width: 64px; height: 64px; border-radius: 16px; }
   .app-btn-ghost span, .app-btn-secondary span { display: none; }
   .app-btn-ghost, .app-btn-secondary { padding: 9px; }
   .app-kv { grid-template-columns: 80px 1fr; font-size: 12px; }
+  .app-result-title-row h2 { font-size: 16px; }
 }
 
 @media (max-width: 420px) {
