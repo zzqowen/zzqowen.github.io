@@ -556,7 +556,6 @@
   font-weight: 700;
 }
 
-.image-field select,
 .image-dimension-inputs input {
   width: 100%;
   min-width: 0;
@@ -567,19 +566,10 @@
   transition: border-color 150ms ease, box-shadow 150ms ease, background 150ms ease;
 }
 
-.image-field select {
-  height: 41px;
-  padding: 0 11px;
-  cursor: pointer;
-  font-size: 11px;
-}
-
-.image-field select:hover,
 .image-dimension-inputs input:hover {
   border-color: #b9c5b6;
 }
 
-.image-field select:focus,
 .image-dimension-inputs input:focus {
   border-color: #87a189;
   background: #fff;

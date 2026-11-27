@@ -16,6 +16,7 @@ import {
   WandSparkles,
 } from 'lucide-react'
 import JsonTreeView from '../../components/JsonTreeView'
+import Select from '../../components/Select'
 import { useI18n } from '../../i18n/context'
 import type { TranslationKey } from '../../i18n/dictionary'
 import { collectContainerPaths } from './jsonPath'
@@ -243,17 +244,19 @@ export default function JsonTool() {
         </div>
 
         <div className="json-toolbar-settings">
-          <label className="json-indent-control">
+          <div className="json-indent-control">
             <span>{t('json.indent')}</span>
-            <select
-              aria-label={t('json.indent')}
+            <Select<JsonIndent>
+              variant="compact"
+              ariaLabel={t('json.indent')}
               value={indent}
-              onChange={(event) => setIndent(event.target.value === '4' ? 4 : 2)}
-            >
-              <option value={2}>{t('json.indentSpaces', { count: 2 })}</option>
-              <option value={4}>{t('json.indentSpaces', { count: 4 })}</option>
-            </select>
-          </label>
+              options={[
+                { value: 2, label: t('json.indentSpaces', { count: 2 }) },
+                { value: 4, label: t('json.indentSpaces', { count: 4 }) },
+              ]}
+              onChange={setIndent}
+            />
+          </div>
           <span className="json-shortcut" aria-label={t('json.shortcut')}>
             <kbd>Ctrl / ⌘</kbd><span>+</span><kbd>Enter</kbd>
           </span>

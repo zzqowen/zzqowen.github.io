@@ -30,6 +30,7 @@ import {
 import type { ImageMimeType, OutputFormat } from './imageUtils'
 import { useI18n } from '../../i18n/context'
 import type { TranslationKey } from '../../i18n/dictionary'
+import Select from '../../components/Select'
 import './ImageTool.css'
 
 const MAX_FILE_COUNT = 20
@@ -686,18 +687,20 @@ export default function ImageTool() {
           </div>
 
           <fieldset className="image-settings-fields" disabled={isBusy}>
-            <label className="image-field">
+            <div className="image-field">
               <span className="image-field-label">{t('image.formatLabel')}</span>
-              <select
+              <Select<OutputFormat>
+                ariaLabel={t('image.formatLabel')}
                 value={settings.format}
-                onChange={(event) => updateSettings({ format: event.target.value as OutputFormat })}
-              >
-                <option value="original">{t('image.formatOriginal')}</option>
-                <option value="image/jpeg">JPEG (.jpg)</option>
-                <option value="image/png">PNG (.png)</option>
-                <option value="image/webp">WebP (.webp)</option>
-              </select>
-            </label>
+                options={[
+                  { value: 'original', label: t('image.formatOriginal') },
+                  { value: 'image/jpeg', label: 'JPEG (.jpg)' },
+                  { value: 'image/png', label: 'PNG (.png)' },
+                  { value: 'image/webp', label: 'WebP (.webp)' },
+                ]}
+                onChange={(nextFormat) => updateSettings({ format: nextFormat })}
+              />
+            </div>
 
             <div className="image-field">
               <label className="image-quality-label" htmlFor="image-quality-range">

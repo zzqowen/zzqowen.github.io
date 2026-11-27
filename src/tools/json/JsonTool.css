@@ -48,15 +48,15 @@
   white-space: nowrap;
 }
 
-.json-indent-control select {
+.json-indent-control .owen-select {
   height: 100%;
-  padding: 0 8px 0 7px;
-  border: 0;
-  color: var(--ink);
-  background: transparent;
-  cursor: pointer;
+  align-items: center;
+}
+
+.json-indent-control .owen-select-trigger {
+  height: 100%;
+  padding: 0 2px 0 7px;
   font-size: 11px;
-  font-weight: 650;
 }
 
 .json-shortcut {
@@ -334,9 +334,13 @@
     padding-right: 5px;
   }
 
-  .json-indent-control select {
+  .json-indent-control .owen-select {
     flex: 1;
-    text-align: right;
+  }
+
+  .json-indent-control .owen-select-trigger {
+    justify-content: flex-end;
+    gap: 6px;
   }
 }
 
