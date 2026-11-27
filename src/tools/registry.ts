@@ -1,5 +1,5 @@
 import { lazy } from 'react'
-import { Braces, GitCompare, Images } from 'lucide-react'
+import { AppWindow, Braces, GitCompare, Images } from 'lucide-react'
 import type { ToolDefinition } from './types'
 
 export const toolRegistry: ToolDefinition[] = [
@@ -44,6 +44,20 @@ export const toolRegistry: ToolDefinition[] = [
     component: lazy(() => import('./image/ImageTool')),
     accent: 'blue',
     action: { zh: '处理图片', en: 'Process' },
+  },
+  {
+    id: 'app-inspector',
+    moduleId: 'app',
+    name: { zh: 'APP 解析', en: 'APP Inspector' },
+    description: {
+      zh: '拖入 APK 或 IPA，本地解析应用图标、包名、版本、权限与最低运行版本。',
+      en: 'Drop an APK or IPA to locally inspect its icon, package name, version, permissions and minimum OS.',
+    },
+    keywords: ['apk', 'ipa', 'android', 'ios', 'bundle', 'manifest', 'plist', 'app', '图标', 'icon'],
+    icon: AppWindow,
+    component: lazy(() => import('./app-parser/AppParserTool')),
+    accent: 'amber',
+    action: { zh: '选择文件', en: 'Choose file' },
   },
 ]
 

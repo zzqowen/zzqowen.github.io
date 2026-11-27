@@ -1,4 +1,4 @@
-import { Braces, Images } from 'lucide-react'
+import { AppWindow, Braces, Images } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import type { LocalizedText } from '../i18n/localize'
 
@@ -33,6 +33,17 @@ export const moduleRegistry: SiteModule[] = [
     icon: Images,
     accent: 'blue',
     keywords: ['image', '图片', '压缩', 'compress', '转换', 'convert', '缩放', 'resize', 'png', 'jpeg', 'webp'],
+  },
+  {
+    id: 'app',
+    name: { zh: 'APP 解析', en: 'APP Inspector' },
+    description: {
+      zh: '拖入 APK 或 IPA，本地解析应用图标、包名、版本与权限。',
+      en: 'Drop an APK or IPA to inspect its icon, package name, version and permissions locally.',
+    },
+    icon: AppWindow,
+    accent: 'amber',
+    keywords: ['apk', 'ipa', 'android', 'ios', 'bundle', 'manifest', 'plist', 'app', '图标', 'icon'],
   },
 ]
 
