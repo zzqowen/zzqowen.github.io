@@ -25,6 +25,9 @@ function LegacyToolRedirect() {
 }
 
 export default function App() {
+  const { pathname } = useLocation()
+  const isHome = pathname === '/'
+
   return (
     <div className="app-shell">
       <ScrollManager />
@@ -38,7 +41,7 @@ export default function App() {
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
-      <SiteFooter />
+      {isHome && <SiteFooter />}
     </div>
   )
 }

@@ -17,7 +17,7 @@ export interface DiffResult {
 
 export type JsonParseResult =
   | { ok: true; value: unknown }
-  | { ok: false; message: string; line?: number; column?: number }
+  | { ok: false; kind: 'empty' | 'syntax'; message: string; line?: number; column?: number }
 
 export const DEFAULT_MAX_ENTRIES = 500
 
@@ -25,14 +25,20 @@ const MAX_VALUE_LENGTH = 120
 
 export function parseJsonText(text: string): JsonParseResult {
   if (text.trim().length === 0) {
-    return { ok: false, message: '内容为空，请粘贴 JSON。' }
+    return { ok: false, kind: 'empty', message: '内容为空，请粘贴 JSON。' }
   }
 
   try {
     return { ok: true, value: JSON.parse(text) as unknown }
   } catch (error) {
     const detail = parseJsonError(text, error)
-    return { ok: false, message: detail.message, line: detail.line, column: detail.column }
+    return {
+      ok: false,
+      kind: detail.kind,
+      message: detail.message,
+      line: detail.line,
+      column: detail.column,
+    }
   }
 }
 

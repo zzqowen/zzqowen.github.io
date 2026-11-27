@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import type { ClipboardEvent, KeyboardEvent } from 'react'
+import { useRef, useState } from 'react'
+import type { ClipboardEvent, KeyboardEvent, UIEvent } from 'react'
 import {
   ArrowLeft,
   CheckCircle2,
@@ -15,6 +15,8 @@ import {
 } from 'lucide-react'
 import JsonTreeView from '../../components/JsonTreeView'
 import type { JsonDiffKind } from '../../components/JsonTreeView'
+import { useI18n } from '../../i18n/context'
+import type { TranslationKey } from '../../i18n/dictionary'
 import { collectContainerPaths } from '../json/jsonPath'
 import { formatPastedJson } from '../json/jsonUtils'
 import type { DiffEntry, DiffType } from './diffUtils'
@@ -69,6 +71,7 @@ interface JsonInput {
 }
 
 interface PaneError {
+  kind: 'empty' | 'syntax'
   message: string
   line?: number
   column?: number
@@ -88,7 +91,9 @@ interface ComparisonPane {
 
 interface Notice {
   tone: NoticeTone
-  message: string
+  key: TranslationKey
+  vars?: Record<string, string | number>
+  error?: PaneError
   line?: number
   column?: number
 }
@@ -99,10 +104,10 @@ const HIGHLIGHT_PRIORITY: Record<JsonDiffKind, number> = {
   changed: 1,
 }
 
-const DIFF_LABELS: Record<DiffType, string> = {
-  added: '新增',
-  removed: '删除',
-  changed: '修改',
+const DIFF_KEYS: Record<DiffType, TranslationKey> = {
+  added: 'diff.added',
+  removed: 'diff.removed',
+  changed: 'diff.changed',
 }
 
 let inputSequence = 0
@@ -130,49 +135,33 @@ function setHighlight(map: Map<string, JsonDiffKind>, path: string, kind: JsonDi
   }
 }
 
-function buildReport(panes: ComparisonPane[]): string {
-  const lines = ['JSON 对比报告', '基准：JSON 1']
-
-  panes.filter((pane) => !pane.isBase).forEach((pane) => {
-    lines.push('', `== ${pane.label} vs JSON 1 ==`)
-
-    if (pane.error) {
-      const location = pane.error.line !== undefined && pane.error.column !== undefined
-        ? `（第 ${pane.error.line} 行，第 ${pane.error.column} 列）`
-        : ''
-      lines.push(`解析失败：${pane.error.message}${location}`)
-      return
-    }
-
-    if (pane.entries.length === 0) {
-      lines.push('内容一致')
-      return
-    }
-
-    pane.entries.forEach((entry) => lines.push(formatDiffLine(entry)))
-    if (pane.truncated) lines.push('（差异过多，仅显示前 500 条）')
-  })
-
-  return lines.join('\n')
-}
-
 export default function JsonDiffTool() {
+  const { language, t } = useI18n()
   const [inputs, setInputs] = useState<JsonInput[]>(createEmptyInputs)
   const [panes, setPanes] = useState<ComparisonPane[]>([])
   const [view, setView] = useState<ViewMode>('edit')
   const [collapsedPaths, setCollapsedPaths] = useState<Set<string>>(new Set())
-  const [notice, setNotice] = useState<Notice>({
-    tone: 'neutral',
-    message: '以 JSON 1 为基准，粘贴其余 JSON 后点击“对比差异”。粘贴时会自动格式化。',
-  })
+  const [notice, setNotice] = useState<Notice>({ tone: 'neutral', key: 'diff.noticeInitial' })
+  const paneBodies = useRef<Array<HTMLDivElement | null>>([])
+  const isSyncingScroll = useRef(false)
 
   const hasAnyContent = inputs.some((input) => input.text.trim().length > 0)
   const hasResult = panes.length > 0
+
+  function paneErrorText(error: PaneError) {
+    if (language === 'zh') return error.message
+    return t(error.kind === 'syntax' ? 'json.errorSyntax' : 'json.errorEmpty')
+  }
+
+  const noticeText = notice.error
+    ? t(notice.key, { ...notice.vars, message: paneErrorText(notice.error) })
+    : t(notice.key, notice.vars)
 
   function resetComparison() {
     setPanes([])
     setView('edit')
     setCollapsedPaths(new Set())
+    paneBodies.current = []
   }
 
   function toggleNode(path: string) {
@@ -200,11 +189,27 @@ export default function JsonDiffTool() {
     setCollapsedPaths(paths)
   }
 
+  function syncScroll(event: UIEvent<HTMLDivElement>) {
+    if (isSyncingScroll.current) return
+
+    const source = event.currentTarget
+    isSyncingScroll.current = true
+    paneBodies.current.forEach((body) => {
+      if (body && body !== source) {
+        body.scrollTop = source.scrollTop
+        body.scrollLeft = source.scrollLeft
+      }
+    })
+    window.requestAnimationFrame(() => {
+      isSyncingScroll.current = false
+    })
+  }
+
   function handleInputChange(id: string, text: string) {
     setInputs((current) => current.map((input) => (input.id === id ? { ...input, text } : input)))
     if (hasResult) {
       resetComparison()
-      setNotice({ tone: 'neutral', message: '内容已修改，请重新点击“对比差异”。' })
+      setNotice({ tone: 'neutral', key: 'diff.noticeModified' })
     }
   }
 
@@ -229,14 +234,14 @@ export default function JsonDiffTool() {
     if (inputs.length >= MAX_INPUTS) return
     setInputs((current) => [...current, { id: nextInputId(), text: '' }])
     resetComparison()
-    setNotice({ tone: 'neutral', message: '已添加一份 JSON，粘贴内容后即可对比。' })
+    setNotice({ tone: 'neutral', key: 'diff.noticeAdded' })
   }
 
   function removeInput(id: string) {
     if (inputs.length <= 2) return
     setInputs((current) => current.filter((input) => input.id !== id))
     resetComparison()
-    setNotice({ tone: 'neutral', message: '已移除一份 JSON，请重新对比。' })
+    setNotice({ tone: 'neutral', key: 'diff.noticeRemoved' })
   }
 
   function compareInputs(list: JsonInput[]) {
@@ -245,7 +250,13 @@ export default function JsonDiffTool() {
       resetComparison()
       setNotice({
         tone: 'error',
-        message: `基准 JSON 无法解析：${baseParsed.message}`,
+        key: 'diff.noticeBaseFailed',
+        error: {
+          kind: baseParsed.kind,
+          message: baseParsed.message,
+          line: baseParsed.line,
+          column: baseParsed.column,
+        },
         line: baseParsed.line,
         column: baseParsed.column,
       })
@@ -264,7 +275,12 @@ export default function JsonDiffTool() {
           id: input.id,
           label,
           isBase: false,
-          error: parsed,
+          error: {
+            kind: parsed.kind,
+            message: parsed.message,
+            line: parsed.line,
+            column: parsed.column,
+          },
           entries: [],
           counts: emptyCounts(),
           truncated: false,
@@ -317,13 +333,14 @@ export default function JsonDiffTool() {
     setPanes([basePane, ...targetPanes])
     setView('diff')
     setCollapsedPaths(new Set())
+    paneBodies.current = []
 
     if (failedCount > 0) {
-      setNotice({ tone: 'error', message: `${failedCount} 份 JSON 无法解析，请在原文中修正后重新对比。` })
+      setNotice({ tone: 'error', key: 'diff.noticeTargetsFailed', vars: { count: failedCount } })
     } else if (diffCount === 0) {
-      setNotice({ tone: 'success', message: `对比完成：${list.length} 份 JSON 内容完全一致。` })
+      setNotice({ tone: 'success', key: 'diff.noticeIdentical', vars: { count: list.length } })
     } else {
-      setNotice({ tone: 'success', message: `对比完成：共 ${diffCount} 处差异，已在原文中高亮。` })
+      setNotice({ tone: 'success', key: 'diff.noticeCompared', vars: { count: diffCount } })
     }
   }
 
@@ -344,24 +361,50 @@ export default function JsonDiffTool() {
   function handleClear() {
     setInputs(createEmptyInputs())
     resetComparison()
-    setNotice({ tone: 'neutral', message: '已清空，请粘贴需要对比的 JSON。' })
+    setNotice({ tone: 'neutral', key: 'diff.noticeCleared' })
+  }
+
+  function buildReport() {
+    const lines = [t('diff.reportTitle'), t('diff.reportBaseline')]
+
+    panes.filter((pane) => !pane.isBase).forEach((pane) => {
+      lines.push('', t('diff.reportHeader', { label: pane.label }))
+
+      if (pane.error) {
+        const location = pane.error.line !== undefined && pane.error.column !== undefined
+          ? `(${t('json.location', { line: pane.error.line, column: pane.error.column })})`
+          : ''
+        lines.push(`${t('diff.reportParseFailed')}${paneErrorText(pane.error)}${location}`)
+        return
+      }
+
+      if (pane.entries.length === 0) {
+        lines.push(t('diff.reportIdentical'))
+        return
+      }
+
+      pane.entries.forEach((entry) => lines.push(formatDiffLine(entry)))
+      if (pane.truncated) lines.push(t('diff.reportTruncated'))
+    })
+
+    return lines.join('\n')
   }
 
   async function handleCopy() {
     if (!hasResult) return
 
     try {
-      await navigator.clipboard.writeText(buildReport(panes))
-      setNotice({ tone: 'success', message: '对比报告已复制到剪贴板。' })
+      await navigator.clipboard.writeText(buildReport())
+      setNotice({ tone: 'success', key: 'diff.noticeCopied' })
     } catch {
-      setNotice({ tone: 'error', message: '自动复制失败，请改用“下载报告”。' })
+      setNotice({ tone: 'error', key: 'diff.noticeCopyFailed' })
     }
   }
 
   function handleDownload() {
     if (!hasResult) return
 
-    const blob = new Blob([buildReport(panes)], { type: 'text/plain;charset=utf-8' })
+    const blob = new Blob([buildReport()], { type: 'text/plain;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
@@ -370,7 +413,7 @@ export default function JsonDiffTool() {
     link.click()
     link.remove()
     URL.revokeObjectURL(url)
-    setNotice({ tone: 'success', message: '已生成 json-diff.txt，开始下载。' })
+    setNotice({ tone: 'success', key: 'diff.noticeDownloaded' })
   }
 
   function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
@@ -384,12 +427,14 @@ export default function JsonDiffTool() {
     <div className="diff-tool" onKeyDown={handleKeyDown}>
       <div className="diff-toolbar">
         <div className="diff-toolbar-info">
-          <span className="diff-toolbar-count"><GitCompare size={16} />{inputs.length} 份 JSON</span>
-          <span className="diff-toolbar-hint">以 JSON 1 为基准</span>
+          <span className="diff-toolbar-count">
+            <GitCompare size={16} />{t('diff.count', { count: inputs.length })}
+          </span>
+          <span className="diff-toolbar-hint">{t('diff.baseHint')}</span>
         </div>
         <div className="diff-toolbar-actions">
           <button className="button button-primary" type="button" onClick={handleCompare}>
-            <GitCompare size={15} />对比差异
+            <GitCompare size={15} />{t('diff.compare')}
           </button>
           <button
             className="button button-secondary"
@@ -397,10 +442,10 @@ export default function JsonDiffTool() {
             onClick={addInput}
             disabled={inputs.length >= MAX_INPUTS}
           >
-            <Plus size={15} />添加 JSON
+            <Plus size={15} />{t('diff.add')}
           </button>
           <button className="button button-ghost" type="button" onClick={handleSample}>
-            <Sparkles size={15} />示例
+            <Sparkles size={15} />{t('diff.sample')}
           </button>
           <button
             className="button button-ghost"
@@ -408,7 +453,7 @@ export default function JsonDiffTool() {
             onClick={handleClear}
             disabled={!hasAnyContent}
           >
-            <Eraser size={15} />清空
+            <Eraser size={15} />{t('diff.clear')}
           </button>
         </div>
       </div>
@@ -419,9 +464,11 @@ export default function JsonDiffTool() {
           : notice.tone === 'error'
             ? <CircleAlert size={16} />
             : <GitCompare size={16} />}
-        <span>{notice.message}</span>
+        <span>{noticeText}</span>
         {notice.line !== undefined && notice.column !== undefined && (
-          <span className="diff-error-location">第 {notice.line} 行，第 {notice.column} 列</span>
+          <span className="diff-error-location">
+            {t('json.location', { line: notice.line, column: notice.column })}
+          </span>
         )}
         <span className="diff-shortcut"><kbd>Ctrl / ⌘</kbd> + <kbd>Enter</kbd></span>
       </div>
@@ -433,20 +480,24 @@ export default function JsonDiffTool() {
               <div className="diff-input-head">
                 <div className="diff-input-title">
                   <span className="diff-input-badge" data-base={index === 0}>
-                    {index === 0 ? '基准' : `JSON ${index + 1}`}
+                    {index === 0 ? t('diff.baseBadge') : `JSON ${index + 1}`}
                   </span>
-                  <h2 id={`diff-title-${input.id}`}>{index === 0 ? '基准 JSON' : `对比 JSON ${index + 1}`}</h2>
+                  <h2 id={`diff-title-${input.id}`}>
+                    {index === 0
+                      ? t('diff.baselineTitle')
+                      : t('diff.comparisonTitle', { index: index + 1 })}
+                  </h2>
                 </div>
                 <div className="diff-input-meta">
-                  <span>{input.text.length.toLocaleString('zh-CN')} 字符</span>
+                  <span>{t('json.chars', { count: input.text.length.toLocaleString() })}</span>
                   {index > 0 && (
                     <button
                       className="diff-remove"
                       type="button"
                       onClick={() => removeInput(input.id)}
                       disabled={inputs.length <= 2}
-                      aria-label={`移除对比 JSON ${index + 1}`}
-                      title="移除这份 JSON"
+                      aria-label={t('diff.removeAria', { index: index + 1 })}
+                      title={t('diff.remove')}
                     >
                       <Trash2 size={14} />
                     </button>
@@ -454,7 +505,9 @@ export default function JsonDiffTool() {
                 </div>
               </div>
               <label className="sr-only" htmlFor={`diff-editor-${input.id}`}>
-                {index === 0 ? '基准 JSON 内容' : `对比 JSON ${index + 1} 内容`}
+                {index === 0
+                  ? t('diff.baselineAria')
+                  : t('diff.comparisonAria', { index: index + 1 })}
               </label>
               <textarea
                 id={`diff-editor-${input.id}`}
@@ -462,7 +515,7 @@ export default function JsonDiffTool() {
                 value={input.text}
                 onChange={(event) => handleInputChange(input.id, event.target.value)}
                 onPaste={(event) => handlePaste(event, input)}
-                placeholder={index === 0 ? '粘贴作为基准的 JSON，会自动格式化…' : '粘贴需要对比的 JSON，会自动格式化…'}
+                placeholder={index === 0 ? t('diff.pasteBase') : t('diff.pasteTarget')}
                 autoCapitalize="off"
                 autoCorrect="off"
                 spellCheck={false}
@@ -475,10 +528,10 @@ export default function JsonDiffTool() {
         <section className="diff-compare" aria-labelledby="diff-compare-heading">
           <div className="diff-compare-bar">
             <div className="diff-compare-heading">
-              <h2 id="diff-compare-heading">对比高亮</h2>
-              <div className="diff-legend" aria-label="差异颜色说明">
-                {(Object.keys(DIFF_LABELS) as DiffType[]).map((type) => (
-                  <span key={type} data-kind={type}>{DIFF_LABELS[type]}</span>
+              <h2 id="diff-compare-heading">{t('diff.highlightTitle')}</h2>
+              <div className="diff-legend" aria-label={t('diff.legendAria')}>
+                {(Object.keys(DIFF_KEYS) as DiffType[]).map((type) => (
+                  <span key={type} data-kind={type}>{t(DIFF_KEYS[type])}</span>
                 ))}
               </div>
             </div>
@@ -488,35 +541,35 @@ export default function JsonDiffTool() {
                 type="button"
                 onClick={expandAll}
               >
-                <Plus size={14} />展开全部
+                <Plus size={14} />{t('diff.expandAll')}
               </button>
               <button
                 className="button button-ghost diff-compare-button"
                 type="button"
                 onClick={collapseAll}
               >
-                <Eraser size={14} />收起全部
+                <Eraser size={14} />{t('diff.collapseAll')}
               </button>
               <button
                 className="button button-secondary diff-compare-button"
                 type="button"
                 onClick={() => setView('edit')}
               >
-                <ArrowLeft size={14} />返回编辑
+                <ArrowLeft size={14} />{t('diff.backToEdit')}
               </button>
               <button
                 className="button button-ghost diff-compare-button"
                 type="button"
                 onClick={() => { void handleCopy() }}
               >
-                <Copy size={14} />复制报告
+                <Copy size={14} />{t('diff.copyReport')}
               </button>
               <button
                 className="button button-ghost diff-compare-button"
                 type="button"
                 onClick={handleDownload}
               >
-                <Download size={14} />下载
+                <Download size={14} />{t('diff.download')}
               </button>
             </div>
           </div>
@@ -525,17 +578,17 @@ export default function JsonDiffTool() {
             className="diff-panes"
             style={{ gridTemplateColumns: `repeat(${panes.length}, minmax(300px, 1fr))` }}
           >
-            {panes.map((pane) => (
+            {panes.map((pane, index) => (
               <article className="diff-pane" key={pane.id}>
                 <header className="diff-pane-head">
                   <span className="diff-pane-label" data-base={pane.isBase}>{pane.label}</span>
                   {pane.error ? (
-                    <span className="diff-pane-badge" data-kind="error">解析失败</span>
+                    <span className="diff-pane-badge" data-kind="error">{t('diff.parseFailed')}</span>
                   ) : pane.isBase ? (
-                    <span className="diff-pane-hint">基准</span>
+                    <span className="diff-pane-hint">{t('diff.baseTag')}</span>
                   ) : pane.entries.length === 0 ? (
                     <span className="diff-pane-badge" data-kind="same">
-                      <CheckCircle2 size={12} />一致
+                      <CheckCircle2 size={12} />{t('diff.identical')}
                     </span>
                   ) : (
                     <div className="diff-pane-counts">
@@ -546,13 +599,17 @@ export default function JsonDiffTool() {
                   )}
                 </header>
 
-                <div className="diff-pane-body">
+                <div
+                  className="diff-pane-body"
+                  ref={(node) => { paneBodies.current[index] = node }}
+                  onScroll={pane.error ? undefined : syncScroll}
+                >
                   {pane.error ? (
                     <p className="diff-pane-error" role="alert">
                       <CircleAlert size={15} />
-                      {pane.error.message}
+                      {paneErrorText(pane.error)}
                       {pane.error.line !== undefined && pane.error.column !== undefined && (
-                        <span>第 {pane.error.line} 行，第 {pane.error.column} 列</span>
+                        <span>{t('json.location', { line: pane.error.line, column: pane.error.column })}</span>
                       )}
                     </p>
                   ) : (
@@ -565,14 +622,14 @@ export default function JsonDiffTool() {
                   )}
                 </div>
 
-                {pane.truncated && <p className="diff-pane-truncated">差异过多，仅高亮前 500 处</p>}
+                {pane.truncated && <p className="diff-pane-truncated">{t('diff.truncated')}</p>}
               </article>
             ))}
           </div>
         </section>
       )}
 
-      <p className="diff-privacy"><ShieldCheck size={14} />所有对比均在浏览器本地完成，JSON 不会上传。</p>
+      <p className="diff-privacy"><ShieldCheck size={14} />{t('diff.privacy')}</p>
     </div>
   )
 }

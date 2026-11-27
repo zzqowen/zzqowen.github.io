@@ -1,14 +1,17 @@
 import { ArrowLeft } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { useI18n } from '../i18n/context'
 
 export default function NotFoundPage() {
+  const { t } = useI18n()
+
   return (
     <section className="container not-found">
-      <span className="eyebrow">404 / NOT FOUND</span>
-      <h1>这里还没有工具。</h1>
-      <p>你访问的页面不存在，回到工具库继续探索吧。</p>
+      <span className="eyebrow">{t('notfound.kicker')}</span>
+      <h1>{t('notfound.title')}</h1>
+      <p>{t('notfound.desc')}</p>
       <Link className="button button-primary" to="/">
-        <ArrowLeft size={17} />返回工具库
+        <ArrowLeft size={17} />{t('notfound.action')}
       </Link>
     </section>
   )

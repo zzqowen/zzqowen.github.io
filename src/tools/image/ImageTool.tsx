@@ -28,6 +28,8 @@ import {
   resolveOutputType,
 } from './imageUtils'
 import type { ImageMimeType, OutputFormat } from './imageUtils'
+import { useI18n } from '../../i18n/context'
+import type { TranslationKey } from '../../i18n/dictionary'
 import './ImageTool.css'
 
 const MAX_FILE_COUNT = 20
@@ -38,6 +40,39 @@ const FORMAT_LABELS: Record<ImageMimeType, string> = {
   'image/jpeg': 'JPEG',
   'image/png': 'PNG',
   'image/webp': 'WebP',
+}
+
+interface Message {
+  key: TranslationKey
+  vars?: Record<string, string | number>
+}
+
+const UTIL_ERROR_KEYS: Record<string, TranslationKey> = {
+  '无法识别原始图片格式': 'image.errorUnknownFormat',
+  '原始图片尺寸必须大于 0': 'image.errorSourceDimensions',
+  '最大宽度必须大于 0': 'image.errorMaxWidthZero',
+  '最大高度必须大于 0': 'image.errorMaxHeightZero',
+}
+
+class LocalizedError extends Error {
+  key: TranslationKey
+  vars?: Record<string, string | number>
+
+  constructor(key: TranslationKey, vars?: Record<string, string | number>) {
+    super(key)
+    this.name = 'LocalizedError'
+    this.key = key
+    this.vars = vars
+  }
+}
+
+function toErrorMessage(error: unknown): Message {
+  if (error instanceof LocalizedError) return { key: error.key, vars: error.vars }
+  if (error instanceof Error) {
+    const key = UTIL_ERROR_KEYS[error.message]
+    if (key) return { key }
+  }
+  return { key: 'image.errorGeneric' }
 }
 
 interface OutputSettings {
@@ -66,7 +101,7 @@ interface ImageItem {
   height: number
   status: 'reading' | 'ready' | 'processing' | 'done' | 'error'
   progress: number
-  error?: string
+  error?: Message
   output?: ProcessedImage
 }
 
@@ -94,11 +129,11 @@ function loadImage(url: string): Promise<HTMLImageElement> {
     image.onload = () => {
       cleanUp()
       if (image.naturalWidth > 0 && image.naturalHeight > 0) resolve(image)
-      else reject(new Error('无法读取图片尺寸'))
+      else reject(new LocalizedError('image.errorReadDimensions'))
     }
     image.onerror = () => {
       cleanUp()
-      reject(new Error('图片读取失败，文件可能已损坏或格式不正确'))
+      reject(new LocalizedError('image.errorReadFailed'))
     }
     image.decoding = 'async'
     image.src = url
@@ -110,11 +145,11 @@ function canvasToBlob(canvas: HTMLCanvasElement, type: ImageMimeType, quality: n
     canvas.toBlob(
       (blob) => {
         if (!blob) {
-          reject(new Error('浏览器未能生成图片，请尝试降低输出尺寸'))
+          reject(new LocalizedError('image.errorCanvasBlob'))
           return
         }
         if (blob.type !== type) {
-          reject(new Error(`当前浏览器不支持导出 ${FORMAT_LABELS[type]} 格式`))
+          reject(new LocalizedError('image.errorUnsupportedExport', { format: FORMAT_LABELS[type] }))
           return
         }
         resolve(blob)
@@ -140,7 +175,7 @@ async function convertImage(
   canvas.width = dimensions.width
   canvas.height = dimensions.height
   const context = canvas.getContext('2d')
-  if (!context) throw new Error('无法创建图片画布，请尝试降低输出尺寸')
+  if (!context) throw new LocalizedError('image.errorCanvasContext')
 
   context.imageSmoothingEnabled = true
   context.imageSmoothingQuality = 'high'
@@ -176,21 +211,18 @@ function downloadFile(url: string, fileName: string): void {
   anchor.remove()
 }
 
-function parseMaxDimension(value: string, label: string): number | undefined {
+function parseMaxDimension(value: string, dimension: 'width' | 'height'): number | undefined {
   const trimmed = value.trim()
   if (!trimmed) return undefined
   const parsed = Number(trimmed)
   if (!Number.isInteger(parsed) || parsed <= 0) {
-    throw new Error(`${label}需为大于 0 的整数，或留空表示不限制`)
+    throw new LocalizedError(dimension === 'width' ? 'image.errorInvalidMaxWidth' : 'image.errorInvalidMaxHeight')
   }
   return parsed
 }
 
-function getErrorMessage(error: unknown): string {
-  return error instanceof Error && error.message ? error.message : '图片处理失败，请重试'
-}
-
 export default function ImageTool() {
+  const { language, t } = useI18n()
   const [items, setItems] = useState<ImageItem[]>([])
   const [settings, setSettings] = useState<OutputSettings>({
     format: 'original',
@@ -199,9 +231,9 @@ export default function ImageTool() {
     maxHeight: '',
     keepAspectRatio: true,
   })
-  const [uploadErrors, setUploadErrors] = useState<string[]>([])
-  const [processError, setProcessError] = useState('')
-  const [settingsNotice, setSettingsNotice] = useState('')
+  const [uploadErrors, setUploadErrors] = useState<Message[]>([])
+  const [processError, setProcessError] = useState<Message | null>(null)
+  const [settingsNotice, setSettingsNotice] = useState<Message | null>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
   const [isZipping, setIsZipping] = useState(false)
@@ -256,14 +288,14 @@ export default function ImageTool() {
       })
     } catch (error) {
       if (disposedRef.current) return
-      patchItem(id, { status: 'error', progress: 0, error: getErrorMessage(error) })
+      patchItem(id, { status: 'error', progress: 0, error: toErrorMessage(error) })
     }
   }
 
   const addFiles = (incomingFiles: File[]): void => {
     if (isBusy || incomingFiles.length === 0) return
 
-    const errors: string[] = []
+    const errors: Message[] = []
     const accepted: ImageItem[] = []
     let totalSize = items.reduce((sum, item) => sum + item.file.size, 0)
     let countRejected = 0
@@ -274,19 +306,25 @@ export default function ImageTool() {
         continue
       }
       if (!isSupportedImageType(file.type)) {
-        errors.push(`${file.name}：仅支持 JPEG、PNG、WebP 格式`)
+        errors.push({ key: 'image.errorUnsupportedType', vars: { name: file.name } })
         continue
       }
       if (file.size === 0) {
-        errors.push(`${file.name}：文件为空`)
+        errors.push({ key: 'image.errorEmptyFile', vars: { name: file.name } })
         continue
       }
       if (file.size > MAX_FILE_SIZE) {
-        errors.push(`${file.name}：单张图片不能超过 ${formatBytes(MAX_FILE_SIZE)}`)
+        errors.push({
+          key: 'image.errorFileTooLarge',
+          vars: { name: file.name, size: formatBytes(MAX_FILE_SIZE) },
+        })
         continue
       }
       if (totalSize + file.size > MAX_TOTAL_SIZE) {
-        errors.push(`${file.name}：添加后将超过 ${formatBytes(MAX_TOTAL_SIZE)} 的总大小限制`)
+        errors.push({
+          key: 'image.errorTotalTooLarge',
+          vars: { name: file.name, size: formatBytes(MAX_TOTAL_SIZE) },
+        })
         continue
       }
 
@@ -305,7 +343,10 @@ export default function ImageTool() {
     }
 
     if (countRejected > 0) {
-      errors.push(`最多添加 ${MAX_FILE_COUNT} 张图片，本次有 ${countRejected} 张未加入`)
+      errors.push({
+        key: 'image.errorTooManyFiles',
+        vars: { max: MAX_FILE_COUNT, count: countRejected },
+      })
     }
 
     setUploadErrors(errors)
@@ -335,9 +376,9 @@ export default function ImageTool() {
     revokeObjectUrl(target.previewUrl)
     if (target.output) revokeObjectUrl(target.output.url)
     setItems((currentItems) => currentItems.filter((item) => item.id !== id))
-    setProcessError('')
+    setProcessError(null)
     if (items.length === 1) {
-      setSettingsNotice('')
+      setSettingsNotice(null)
       setUploadErrors([])
     }
   }
@@ -351,8 +392,8 @@ export default function ImageTool() {
     processingRunRef.current += 1
     setItems([])
     setUploadErrors([])
-    setProcessError('')
-    setSettingsNotice('')
+    setProcessError(null)
+    setSettingsNotice(null)
     if (inputRef.current) inputRef.current.value = ''
   }
 
@@ -367,32 +408,32 @@ export default function ImageTool() {
       return { ...item, status: 'ready', progress: 0, error: undefined, output: undefined }
     }))
     setSettings((currentSettings) => ({ ...currentSettings, ...patch }))
-    setProcessError('')
-    if (hadResults) setSettingsNotice('输出设置已更改，旧结果已清除，请重新处理图片。')
+    setProcessError(null)
+    if (hadResults) setSettingsNotice({ key: 'image.noticeSettingsChanged' })
   }
 
   const processImages = async (): Promise<void> => {
     if (isBusy || isReading) return
-    setProcessError('')
-    setSettingsNotice('')
+    setProcessError(null)
+    setSettingsNotice(null)
 
     let preparedSettings: PreparedSettings
     try {
       preparedSettings = {
         format: settings.format,
         quality: settings.quality,
-        maxWidth: parseMaxDimension(settings.maxWidth, '最大宽度'),
-        maxHeight: parseMaxDimension(settings.maxHeight, '最大高度'),
+        maxWidth: parseMaxDimension(settings.maxWidth, 'width'),
+        maxHeight: parseMaxDimension(settings.maxHeight, 'height'),
         keepAspectRatio: settings.keepAspectRatio,
       }
     } catch (error) {
-      setProcessError(getErrorMessage(error))
+      setProcessError(toErrorMessage(error))
       return
     }
 
     const candidates = items.filter((item) => item.status !== 'reading' && item.width > 0 && item.height > 0)
     if (candidates.length === 0) {
-      setProcessError('请先添加可正常读取的图片')
+      setProcessError({ key: 'image.errorNoValidImages' })
       return
     }
 
@@ -432,11 +473,13 @@ export default function ImageTool() {
             status: 'error',
             progress: 0,
             output: undefined,
-            error: getErrorMessage(error),
+            error: toErrorMessage(error),
           })
         }
       }
-      if (failedCount > 0) setProcessError(`${failedCount} 张图片处理失败，可调整设置后重试`)
+      if (failedCount > 0) {
+        setProcessError({ key: 'image.errorProcessFailedCount', vars: { count: failedCount } })
+      }
     } finally {
       if (!disposedRef.current && processingRunRef.current === runId) setIsProcessing(false)
     }
@@ -446,7 +489,7 @@ export default function ImageTool() {
     if (isBusy || completedCount === 0) return
     setIsZipping(true)
     setZipProgress(0)
-    setProcessError('')
+    setProcessError(null)
 
     try {
       const zip = new JSZip()
@@ -462,10 +505,10 @@ export default function ImageTool() {
       })
       if (disposedRef.current) return
       const zipUrl = createObjectUrl(blob)
-      downloadFile(zipUrl, '图片处理结果.zip')
+      downloadFile(zipUrl, language === 'zh' ? '图片处理结果.zip' : 'processed-images.zip')
       window.setTimeout(() => revokeObjectUrl(zipUrl), 1000)
     } catch {
-      if (!disposedRef.current) setProcessError('打包下载失败，请重试或逐个下载')
+      if (!disposedRef.current) setProcessError({ key: 'image.errorZipFailed' })
     } finally {
       if (!disposedRef.current) setIsZipping(false)
     }
@@ -494,7 +537,7 @@ export default function ImageTool() {
               accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
               multiple
               disabled={isBusy}
-              aria-label="选择 JPEG、PNG 或 WebP 图片"
+              aria-label={t('image.selectAria')}
               onChange={(event) => {
                 const files = Array.from(event.target.files ?? [])
                 event.target.value = ''
@@ -503,20 +546,20 @@ export default function ImageTool() {
             />
             <span className="image-upload-icon"><Upload size={25} strokeWidth={1.8} /></span>
             <div className="image-upload-copy">
-              <h2>{isDragging ? '松开即可添加图片' : '点击选择，或拖拽图片到这里'}</h2>
-              <p>JPEG、PNG、WebP · 最多 {MAX_FILE_COUNT} 张 · 单张不超过 {formatBytes(MAX_FILE_SIZE)}</p>
+              <h2>{isDragging ? t('image.dropTitleActive') : t('image.dropTitle')}</h2>
+              <p>{t('image.dropHint', { count: MAX_FILE_COUNT, size: formatBytes(MAX_FILE_SIZE) })}</p>
             </div>
-            <span className="image-upload-local"><ShieldCheck size={14} />图片不会上传</span>
+            <span className="image-upload-local"><ShieldCheck size={14} />{t('image.dropLocal')}</span>
           </div>
 
           {uploadErrors.length > 0 && (
             <div className="image-error-summary" role="alert">
               <AlertCircle size={19} />
               <div>
-                <strong>部分文件未能添加</strong>
-                <ul>{uploadErrors.map((error, index) => <li key={`${index}-${error}`}>{error}</li>)}</ul>
+                <strong>{t('image.errorSummaryTitle')}</strong>
+                <ul>{uploadErrors.map((error, index) => <li key={`${index}-${error.key}`}>{t(error.key, error.vars)}</li>)}</ul>
               </div>
-              <button type="button" onClick={() => setUploadErrors([])} aria-label="关闭上传错误提示"><X size={16} /></button>
+              <button type="button" onClick={() => setUploadErrors([])} aria-label={t('image.dismissErrorsAria')}><X size={16} /></button>
             </div>
           )}
 
@@ -524,11 +567,11 @@ export default function ImageTool() {
             <section className="image-list-section" aria-labelledby="image-list-heading">
               <div className="image-list-toolbar">
                 <div>
-                  <h2 id="image-list-heading">图片列表</h2>
+                  <h2 id="image-list-heading">{t('image.listTitle')}</h2>
                   <span>{items.length} / {MAX_FILE_COUNT}</span>
                 </div>
                 <button className="button button-ghost" type="button" onClick={clearImages} disabled={isBusy}>
-                  <Trash2 size={15} />清空全部
+                  <Trash2 size={15} />{t('image.clearAll')}
                 </button>
               </div>
 
@@ -539,19 +582,19 @@ export default function ImageTool() {
                   const sizeChangeLabel = !output
                     ? ''
                     : output.blob.size === item.file.size
-                      ? '大小不变'
+                      ? t('image.sizeSame')
                       : sizeChange === 0
-                        ? '大小变化不到 1%'
+                        ? t('image.sizeUnderOne')
                         : sizeChange > 0
-                          ? `增加 ${sizeChange}%`
-                          : `减少 ${Math.abs(sizeChange)}%`
+                          ? t('image.sizeIncreased', { percent: sizeChange })
+                          : t('image.sizeDecreased', { percent: Math.abs(sizeChange) })
 
                   return (
                     <li className="image-item" data-status={item.status} key={item.id}>
                       <div className="image-preview">
                         {item.width > 0
-                          ? <img src={item.previewUrl} alt={`${item.file.name} 缩略图`} />
-                          : <FileImage size={31} strokeWidth={1.4} aria-label="正在读取图片" />}
+                          ? <img src={item.previewUrl} alt={t('image.thumbnailAlt', { name: item.file.name })} />
+                          : <FileImage size={31} strokeWidth={1.4} aria-label={t('image.readingImageAria')} />}
                         <span>{FORMAT_LABELS[item.sourceType]}</span>
                       </div>
 
@@ -559,15 +602,17 @@ export default function ImageTool() {
                         <div className="image-item-name-row">
                           <h3 title={item.file.name}>{item.file.name}</h3>
                           <span className={`image-status image-status-${item.status}`}>
-                            {item.status === 'reading' && <><LoaderCircle className="image-spin" size={13} />读取中</>}
-                            {item.status === 'ready' && '等待处理'}
-                            {item.status === 'processing' && '正在处理'}
-                            {item.status === 'done' && <><CheckCircle2 size={13} />已完成</>}
-                            {item.status === 'error' && <><AlertCircle size={13} />失败</>}
+                            {item.status === 'reading' && <><LoaderCircle className="image-spin" size={13} />{t('image.statusReading')}</>}
+                            {item.status === 'ready' && t('image.statusReady')}
+                            {item.status === 'processing' && t('image.statusProcessing')}
+                            {item.status === 'done' && <><CheckCircle2 size={13} />{t('image.statusDone')}</>}
+                            {item.status === 'error' && <><AlertCircle size={13} />{t('image.statusError')}</>}
                           </span>
                         </div>
                         <p className="image-original-meta">
-                          原始：{item.width > 0 ? `${item.width} × ${item.height} · ` : ''}{formatBytes(item.file.size)}
+                          {t('image.originalMeta', {
+                            value: `${item.width > 0 ? `${item.width} × ${item.height} · ` : ''}${formatBytes(item.file.size)}`,
+                          })}
                         </p>
 
                         {item.status === 'processing' && (
@@ -575,7 +620,7 @@ export default function ImageTool() {
                             <div
                               className="image-progress"
                               role="progressbar"
-                              aria-label={`${item.file.name} 处理进度`}
+                              aria-label={t('image.progressAria', { name: item.file.name })}
                               aria-valuemin={0}
                               aria-valuemax={100}
                               aria-valuenow={item.progress}
@@ -586,12 +631,12 @@ export default function ImageTool() {
                           </div>
                         )}
 
-                        {item.error && <p className="image-item-error" role="alert">{item.error}</p>}
+                        {item.error && <p className="image-item-error" role="alert">{t(item.error.key, item.error.vars)}</p>}
 
                         {output && (
                           <div className="image-output-summary">
                             <div>
-                              <span>输出：{FORMAT_LABELS[output.type]}</span>
+                              <span>{t('image.outputLabel', { format: FORMAT_LABELS[output.type] })}</span>
                               <strong>{output.width} × {output.height}</strong>
                               <span>{formatBytes(output.blob.size)}</span>
                             </div>
@@ -611,17 +656,17 @@ export default function ImageTool() {
                           type="button"
                           disabled={!output || isBusy}
                           onClick={() => { if (output) downloadFile(output.url, output.fileName) }}
-                          aria-label={output ? `下载 ${output.fileName}` : `${item.file.name} 尚未生成下载文件`}
+                          aria-label={output ? t('image.downloadFileAria', { name: output.fileName }) : t('image.downloadPendingAria', { name: item.file.name })}
                         >
-                          <Download size={16} /><span>下载</span>
+                          <Download size={16} /><span>{t('image.download')}</span>
                         </button>
                         <button
                           className="image-delete-button"
                           type="button"
                           onClick={() => removeImage(item.id)}
                           disabled={isBusy}
-                          aria-label={`删除 ${item.file.name}`}
-                          title="删除图片"
+                          aria-label={t('image.deleteAria', { name: item.file.name })}
+                          title={t('image.deleteTitle')}
                         >
                           <Trash2 size={17} />
                         </button>
@@ -634,20 +679,20 @@ export default function ImageTool() {
           )}
         </div>
 
-        <aside className="image-settings-panel" aria-label="图片输出设置">
+        <aside className="image-settings-panel" aria-label={t('image.settingsAria')}>
           <div className="image-settings-heading">
             <span><Settings2 size={19} /></span>
-            <div><h2>输出设置</h2><p>统一应用到全部图片</p></div>
+            <div><h2>{t('image.settingsTitle')}</h2><p>{t('image.settingsDesc')}</p></div>
           </div>
 
           <fieldset className="image-settings-fields" disabled={isBusy}>
             <label className="image-field">
-              <span className="image-field-label">输出格式</span>
+              <span className="image-field-label">{t('image.formatLabel')}</span>
               <select
                 value={settings.format}
                 onChange={(event) => updateSettings({ format: event.target.value as OutputFormat })}
               >
-                <option value="original">保持原格式</option>
+                <option value="original">{t('image.formatOriginal')}</option>
                 <option value="image/jpeg">JPEG (.jpg)</option>
                 <option value="image/png">PNG (.png)</option>
                 <option value="image/webp">WebP (.webp)</option>
@@ -656,7 +701,7 @@ export default function ImageTool() {
 
             <div className="image-field">
               <label className="image-quality-label" htmlFor="image-quality-range">
-                <span className="image-field-label">输出质量</span>
+                <span className="image-field-label">{t('image.qualityLabel')}</span>
                 <output>{settings.quality}%</output>
               </label>
               <input
@@ -670,21 +715,21 @@ export default function ImageTool() {
                 disabled={settings.format === 'image/png'}
                 onChange={(event) => updateSettings({ quality: Number(event.target.value) })}
               />
-              <div className="image-range-labels"><span>更小文件</span><span>更高质量</span></div>
-              {settings.format === 'image/png' && <p className="image-field-hint">PNG 为无损格式，质量滑杆不影响输出。</p>}
+              <div className="image-range-labels"><span>{t('image.qualitySmaller')}</span><span>{t('image.qualityBetter')}</span></div>
+              {settings.format === 'image/png' && <p className="image-field-hint">{t('image.qualityPngHint')}</p>}
             </div>
 
             <div className="image-field">
-              <span className="image-field-label">最大输出尺寸</span>
+              <span className="image-field-label">{t('image.maxDimensionsLabel')}</span>
               <div className="image-dimension-inputs">
                 <label>
-                  <span className="sr-only">最大宽度</span>
+                  <span className="sr-only">{t('image.maxWidthAria')}</span>
                   <input
                     type="number"
                     min="1"
                     step="1"
                     inputMode="numeric"
-                    placeholder="原始宽度"
+                    placeholder={t('image.maxWidthPlaceholder')}
                     value={settings.maxWidth}
                     onChange={(event) => updateSettings({ maxWidth: event.target.value })}
                   />
@@ -692,24 +737,24 @@ export default function ImageTool() {
                 </label>
                 <span className="image-dimension-cross">×</span>
                 <label>
-                  <span className="sr-only">最大高度</span>
+                  <span className="sr-only">{t('image.maxHeightAria')}</span>
                   <input
                     type="number"
                     min="1"
                     step="1"
                     inputMode="numeric"
-                    placeholder="原始高度"
+                    placeholder={t('image.maxHeightPlaceholder')}
                     value={settings.maxHeight}
                     onChange={(event) => updateSettings({ maxHeight: event.target.value })}
                   />
                   <span>H px</span>
                 </label>
               </div>
-              <p className="image-field-hint">留空则不限制，输出不会放大原图。</p>
+              <p className="image-field-hint">{t('image.maxDimensionsHint')}</p>
             </div>
 
             <label className="image-switch-row">
-              <span><strong>保持宽高比</strong><small>避免图片拉伸变形</small></span>
+              <span><strong>{t('image.keepAspectLabel')}</strong><small>{t('image.keepAspectHint')}</small></span>
               <input
                 type="checkbox"
                 role="switch"
@@ -720,8 +765,8 @@ export default function ImageTool() {
             </label>
           </fieldset>
 
-          {settingsNotice && <p className="image-settings-notice" role="status"><RefreshCw size={14} />{settingsNotice}</p>}
-          {processError && <p className="image-process-error" role="alert"><AlertCircle size={16} />{processError}</p>}
+          {settingsNotice && <p className="image-settings-notice" role="status"><RefreshCw size={14} />{t(settingsNotice.key, settingsNotice.vars)}</p>}
+          {processError && <p className="image-process-error" role="alert"><AlertCircle size={16} />{t(processError.key, processError.vars)}</p>}
 
           <div className="image-main-actions">
             <button
@@ -731,7 +776,7 @@ export default function ImageTool() {
               disabled={isBusy || isReading || processableCount === 0}
             >
               {isProcessing ? <LoaderCircle className="image-spin" size={18} /> : <Play size={17} fill="currentColor" />}
-              {isProcessing ? '正在处理…' : completedCount > 0 ? '重新处理全部' : '开始处理'}
+              {isProcessing ? t('image.processing') : completedCount > 0 ? t('image.reprocessAll') : t('image.startProcess')}
             </button>
             <button
               className="button button-secondary button-large"
@@ -740,24 +785,28 @@ export default function ImageTool() {
               disabled={isBusy || completedCount === 0}
             >
               {isZipping ? <LoaderCircle className="image-spin" size={18} /> : <Package size={18} />}
-              {isZipping ? `正在打包 ${zipProgress}%` : `批量下载 ZIP${completedCount > 0 ? ` (${completedCount})` : ''}`}
+              {isZipping
+                ? t('image.zipping', { progress: zipProgress })
+                : completedCount > 0
+                  ? t('image.downloadZipCount', { count: completedCount })
+                  : t('image.downloadZip')}
             </button>
           </div>
 
           <p className="image-processing-note" aria-live="polite">
             {isProcessing
-              ? `正在逐项处理，已完成 ${completedCount} / ${processableCount}`
+              ? t('image.noteProcessing', { done: completedCount, total: processableCount })
               : completedCount > 0
-                ? `已生成 ${completedCount} 个文件，可单独或打包下载`
-                : '设置完成后，点击开始处理'}
+                ? t('image.noteDone', { count: completedCount })
+                : t('image.noteIdle')}
           </p>
-          <div className="image-privacy-note"><LockKeyhole size={15} />Canvas 本地转换，数据不离开浏览器</div>
+          <div className="image-privacy-note"><LockKeyhole size={15} />{t('image.privacy')}</div>
         </aside>
       </div>
 
       <div className="image-bottom-note">
         <ImageIcon size={17} />
-        <span>支持透明 PNG / WebP；导出 JPEG 时，透明区域自动填充为白色。</span>
+        <span>{t('image.bottomNote')}</span>
       </div>
     </div>
   )

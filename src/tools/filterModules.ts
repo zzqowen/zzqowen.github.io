@@ -12,10 +12,18 @@ export function filterModules(
   return modules.filter((module) => {
     const moduleTools = tools.filter((tool) => tool.moduleId === module.id)
     const searchable = [
-      module.name,
-      module.description,
+      module.name.zh,
+      module.name.en,
+      module.description.zh,
+      module.description.en,
       ...module.keywords,
-      ...moduleTools.flatMap((tool) => [tool.name, tool.description, ...tool.keywords]),
+      ...moduleTools.flatMap((tool) => [
+        tool.name.zh,
+        tool.name.en,
+        tool.description.zh,
+        tool.description.en,
+        ...tool.keywords,
+      ]),
     ]
 
     return searchable.join(' ').toLocaleLowerCase().includes(keyword)

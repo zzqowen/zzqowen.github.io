@@ -86,11 +86,16 @@ describe('JSON 对比纯函数', () => {
 
   it('解析 JSON 时返回原文错误位置', () => {
     const empty = parseJsonText('   ')
-    expect(empty).toEqual({ ok: false, message: '内容为空，请粘贴 JSON。' })
+    expect(empty.ok).toBe(false)
+    if (!empty.ok) {
+      expect(empty.kind).toBe('empty')
+      expect(empty.message).toBe('内容为空，请粘贴 JSON。')
+    }
 
     const broken = parseJsonText('{\n  "broken": ,\n  "ok": true\n}')
     expect(broken.ok).toBe(false)
     if (!broken.ok) {
+      expect(broken.kind).toBe('syntax')
       expect(broken.line).toBe(2)
       expect(broken.column).toBe(13)
     }
