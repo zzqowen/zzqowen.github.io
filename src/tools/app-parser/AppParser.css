@@ -286,7 +286,7 @@
 /* ====== 结果卡片网格 ====== */
 .app-result-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
   gap: 12px;
 }
 
@@ -297,6 +297,8 @@
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   background: #fbfcfa;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .app-info-card h3 {
@@ -334,6 +336,8 @@
   border-radius: 5px;
   background: #eef2ea;
   color: var(--brand);
+  overflow-wrap: anywhere;
+  word-break: break-all;
 }
 
 /* ====== Chip（权限 / 特性） ====== */
@@ -355,18 +359,23 @@
   border-radius: 8px;
   background: #eef2ea;
   line-height: 1.35;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .app-chip-cn {
   font-size: 13px;
   color: var(--brand);
   font-weight: 600;
+  overflow-wrap: anywhere;
 }
 
 .app-chip-en {
   font-size: 10.5px;
   font-family: "SFMono-Regular", Consolas, monospace;
   color: #6d7a70;
+  overflow-wrap: anywhere;
+  word-break: break-all;
 }
 
 .app-empty {

@@ -335,6 +335,7 @@ export default function AppParserTool() {
               {result.info.platform === 'android' ? (
                 <dl className="app-kv">
                   {result.info.versionName && <><dt>{t('app.versionName')}</dt><dd>{result.info.versionName}{result.info.versionCode ? ` (${result.info.versionCode})` : ''}</dd></>}
+                  <dt>{t('app.apkSize')}</dt><dd>{formatBytes(file?.size ?? 0)}</dd>
                   {result.info.minSdkVersion && <><dt>{t('app.minSdk')}</dt><dd>{result.info.minSdkVersion}</dd></>}
                   {result.info.targetSdkVersion && <><dt>{t('app.targetSdk')}</dt><dd>{result.info.targetSdkVersion}</dd></>}
                   {result.info.iconResource && <><dt>{t('app.iconResource')}</dt><dd className="app-code">{result.info.iconResource}</dd></>}
@@ -343,6 +344,7 @@ export default function AppParserTool() {
                 </dl>
               ) : (
                 <dl className="app-kv">
+                  <dt>{t('app.apkSize')}</dt><dd>{formatBytes(file?.size ?? 0)}</dd>
                   {result.info.shortVersion && <><dt>{t('app.versionShort')}</dt><dd>{result.info.shortVersion}</dd></>}
                   {result.info.buildVersion && <><dt>{t('app.versionBuild')}</dt><dd>{result.info.buildVersion}</dd></>}
                   {result.info.minimumOsVersion && <><dt>{t('app.minOs')}</dt><dd>{result.info.minimumOsVersion}</dd></>}
