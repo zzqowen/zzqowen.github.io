@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ChangeEvent } from 'react'
-import { Download, ImagePlus, QrCode, ScanLine, Trash2, WandSparkles } from 'lucide-react'
+import { Download, ImagePlus, QrCode, ScanLine, Trash2, WandSparkles, Zap } from 'lucide-react'
 import { useI18n } from '../../i18n/context'
 import type { TranslationKey } from '../../i18n/dictionary'
 import Select from '../../components/Select'
@@ -71,6 +71,9 @@ export default function BarcodeTool() {
     [t],
   )
   const [mode, setMode] = useState<Mode>('qr')
+  // 生成计数器：递增即触发对应画布重渲染（切 Tab / 点生成按钮时递增）
+  const [qrGen, setQrGen] = useState(0)
+  const [barGen, setBarGen] = useState(0)
   const qrCanvasRef = useRef<HTMLCanvasElement>(null)
   const barcodeCanvasRef = useRef<HTMLCanvasElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -99,6 +102,12 @@ export default function BarcodeTool() {
   const [barDisplayValue, setBarDisplayValue] = useState(true)
   const [barFontSize, setBarFontSize] = useState(16)
 
+  // 用 ref 读取最新内容，使内容变化本身不触发重渲染（按需生成）
+  const qrTextRef = useRef(qrText)
+  const barTextRef = useRef(barText)
+  useEffect(() => { qrTextRef.current = qrText }, [qrText])
+  useEffect(() => { barTextRef.current = barText }, [barText])
+
   const [notice, setNotice] = useState<Notice | null>(null)
   const [errorKey, setErrorKey] = useState<TranslationKey | null>(null)
 
@@ -107,7 +116,7 @@ export default function BarcodeTool() {
     const canvas = qrCanvasRef.current
     if (!canvas) return
     const result = renderQr(canvas, {
-      text: qrText,
+      text: qrTextRef.current,
       foreground: qrForeground,
       background: qrBackground,
       size: qrSize,
@@ -126,14 +135,14 @@ export default function BarcodeTool() {
     } else {
       setErrorKey(null)
     }
-  }, [qrText, qrForeground, qrBackground, qrSize, qrMargin, qrEcl, qrDotStyle, qrIcon, qrIconRatio, qrIconWithBg])
+  }, [qrGen, qrForeground, qrBackground, qrSize, qrMargin, qrEcl, qrDotStyle, qrIcon, qrIconRatio, qrIconWithBg])
 
   // 渲染条码
   useEffect(() => {
     const canvas = barcodeCanvasRef.current
     if (!canvas) return
     const result = renderBarcode(canvas, {
-      text: barText,
+      text: barTextRef.current,
       format: barFormat,
       foreground: barForeground,
       background: barBackground,
@@ -150,7 +159,7 @@ export default function BarcodeTool() {
     } else {
       setErrorKey(null)
     }
-  }, [barText, barFormat, barForeground, barBackground, barWidth, barHeight, barMargin, barDisplayValue, barFontSize])
+  }, [barGen, barFormat, barForeground, barBackground, barWidth, barHeight, barMargin, barDisplayValue, barFontSize])
 
   // 卸载时清理图标 URL
   useEffect(() => {
@@ -212,7 +221,23 @@ export default function BarcodeTool() {
     }
   }
 
-  const sample = useMemo(() => (mode === 'qr' ? 'https://zzqowen.github.io/' : '123456789012'), [mode])
+  // 切换 Tab 时自动生成对应条码
+  const switchMode = (next: Mode) => {
+    setMode(next)
+    setErrorKey(null)
+    if (next === 'qr') setQrGen((n) => n + 1)
+    else setBarGen((n) => n + 1)
+  }
+
+  // 点击「生成」立即按当前内容渲染
+  const handleGenerate = () => {
+    if (mode === 'qr') {
+      setQrGen((n) => n + 1)
+    } else {
+      setBarGen((n) => n + 1)
+    }
+    setNotice({ tone: 'success', key: 'barcode.noticeGenerated' })
+  }
 
   return (
     <div className="barcode-tool">
@@ -222,7 +247,7 @@ export default function BarcodeTool() {
           role="tab"
           aria-selected={mode === 'qr'}
           className={`barcode-tab${mode === 'qr' ? ' is-active' : ''}`}
-          onClick={() => { setMode('qr'); setErrorKey(null) }}
+          onClick={() => switchMode('qr')}
         >
           <QrCode size={16} /> {t('barcode.tabQr')}
         </button>
@@ -231,7 +256,7 @@ export default function BarcodeTool() {
           role="tab"
           aria-selected={mode === 'barcode'}
           className={`barcode-tab${mode === 'barcode' ? ' is-active' : ''}`}
-          onClick={() => { setMode('barcode'); setErrorKey(null) }}
+          onClick={() => switchMode('barcode')}
         >
           <ScanLine size={16} /> {t('barcode.tabBarcode')}
         </button>
@@ -246,6 +271,12 @@ export default function BarcodeTool() {
                 className="barcode-input barcode-textarea"
                 value={qrText}
                 onChange={(e) => setQrText(e.target.value)}
+                onKeyDown={(e) => {
+                  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    e.preventDefault()
+                    handleGenerate()
+                  }
+                }}
                 placeholder={t('barcode.qrPlaceholder')}
                 aria-label={t('barcode.content')}
                 rows={3}
@@ -255,6 +286,12 @@ export default function BarcodeTool() {
                 className="barcode-input"
                 value={barText}
                 onChange={(e) => setBarText(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    handleGenerate()
+                  }
+                }}
                 placeholder={t('barcode.barcodePlaceholder')}
                 aria-label={t('barcode.content')}
               />
@@ -445,10 +482,10 @@ export default function BarcodeTool() {
 
           <button
             type="button"
-            className="button button-ghost"
-            onClick={() => (mode === 'qr' ? setQrText(sample) : setBarText(sample))}
+            className="button button-primary barcode-generate"
+            onClick={handleGenerate}
           >
-            {t('barcode.sample')}
+            <Zap size={16} /> {t('barcode.generate')}
           </button>
         </div>
 

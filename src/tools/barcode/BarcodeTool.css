@@ -306,6 +306,13 @@
   text-align: center;
 }
 
+/* ====== 生成按钮 ====== */
+.barcode-generate {
+  width: 100%;
+  justify-content: center;
+  margin-top: 4px;
+}
+
 /* ====== 响应式 ====== */
 @media (max-width: 760px) {
   .barcode-layout {
