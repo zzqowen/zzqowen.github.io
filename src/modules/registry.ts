@@ -1,4 +1,4 @@
-import { AppWindow, Braces, Images } from 'lucide-react'
+import { AppWindow, Braces, Images, ScanLine } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import type { LocalizedText } from '../i18n/localize'
 
@@ -44,6 +44,17 @@ export const moduleRegistry: SiteModule[] = [
     icon: AppWindow,
     accent: 'amber',
     keywords: ['apk', 'ipa', 'android', 'ios', 'bundle', 'manifest', 'plist', 'app', '图标', 'icon'],
+  },
+  {
+    id: 'barcode',
+    name: { zh: '条码生成', en: 'Barcode Generator' },
+    description: {
+      zh: '生成二维码与一维条形码，支持自定义颜色、码点形状和中心图标。',
+      en: 'Generate QR codes and 1D barcodes with custom colors, dot styles and a center logo.',
+    },
+    icon: ScanLine,
+    accent: 'lime',
+    keywords: ['barcode', 'qrcode', '二维码', '条形码', '条码', 'qr', '生成', 'generator', '二维码图标', 'logo'],
   },
 ]
 

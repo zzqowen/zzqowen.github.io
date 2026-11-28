@@ -12,10 +12,12 @@
   },
   "dependencies": {
     "apk-meta-parser": "^0.2.3",
+    "jsbarcode": "^3.12.3",
     "jsonc-parser": "^3.3.1",
     "jszip": "^3.10.1",
     "lucide-react": "^0.468.0",
     "parse-ipa": "^4.0.0",
+    "qrcode": "^1.5.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.1.1",
@@ -24,6 +26,7 @@
   "devDependencies": {
     "@eslint/js": "^9.17.0",
     "@types/node": "^22.10.2",
+    "@types/qrcode": "^1.5.6",
     "@types/react": "^19.0.3",
     "@types/react-dom": "^19.0.2",
     "@vitejs/plugin-react": "^4.3.4",

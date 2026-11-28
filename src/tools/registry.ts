@@ -1,5 +1,5 @@
 import { lazy } from 'react'
-import { AppWindow, Braces, GitCompare, Images } from 'lucide-react'
+import { AppWindow, Braces, GitCompare, Images, QrCode } from 'lucide-react'
 import type { ToolDefinition } from './types'
 
 export const toolRegistry: ToolDefinition[] = [
@@ -58,6 +58,20 @@ export const toolRegistry: ToolDefinition[] = [
     component: lazy(() => import('./app-parser/AppParserTool')),
     accent: 'amber',
     action: { zh: '选择文件', en: 'Choose file' },
+  },
+  {
+    id: 'barcode',
+    moduleId: 'barcode',
+    name: { zh: '条码 / 二维码生成', en: 'Barcode & QR Generator' },
+    description: {
+      zh: '生成二维码和一维条形码，可自定义颜色、码点形状，并在二维码中心叠加图标。',
+      en: 'Generate QR codes and 1D barcodes with custom colors, dot styles and an optional center logo.',
+    },
+    keywords: ['barcode', 'qrcode', '二维码', '条形码', '条码', 'qr', '生成', 'generator', '二维码图标', 'logo', 'code128', 'ean13'],
+    icon: QrCode,
+    component: lazy(() => import('./barcode/BarcodeTool')),
+    accent: 'lime',
+    action: { zh: '开始生成', en: 'Generate' },
   },
 ]
 
